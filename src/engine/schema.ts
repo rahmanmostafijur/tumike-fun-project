@@ -196,10 +196,18 @@ export const OrigamiRevealSchema = z.object({
   paper: z.object({ front: hex, back: hex, crease: hex }),
 })
 
-export const RevealSchema = z.discriminatedUnion('kind', [LetterRevealSchema, OrigamiRevealSchema])
+/** A motorhome rolls in; tap its door, pale smoke clears and the card is inside. */
+export const MotorhomeRevealSchema = z.object({
+  kind: z.literal('motorhome'),
+  ...RevealCopy,
+  van: z.object({ body: hex, stripe: hex, door: hex, window: hex, smoke: hex }),
+})
+
+export const RevealSchema = z.discriminatedUnion('kind', [LetterRevealSchema, OrigamiRevealSchema, MotorhomeRevealSchema])
 export type Reveal = z.infer<typeof RevealSchema>
 export type LetterReveal = z.infer<typeof LetterRevealSchema>
 export type OrigamiReveal = z.infer<typeof OrigamiRevealSchema>
+export type MotorhomeReveal = z.infer<typeof MotorhomeRevealSchema>
 
 /** How many knowledge and scenario questions a mode asks. */
 export const QuestionSplitSchema = z

@@ -400,6 +400,28 @@ button:disabled { cursor: default; }
 .is-opening .og-face { animation: fade-in 450ms ease 1350ms both; }
 .is-opening .og-lift { animation: og-lift 900ms cubic-bezier(.25, .8, .25, 1) 1700ms forwards; }
 
+/* ---------- Reveal: the motorhome ---------- */
+@keyframes mh-roll-in { 0% { transform: translateX(-115vw); } 82% { transform: translateX(6px); } 100% { transform: none; } }
+@keyframes mh-spin { to { transform: rotate(720deg); } }
+@keyframes mh-idle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1.5px); } }
+@keyframes mh-door-open { from { transform: perspective(520px) rotateY(0); } to { transform: perspective(520px) rotateY(-108deg); } }
+@keyframes mh-smoke { 0% { opacity: 0; transform: translate(0, 0) scale(.5); } 20% { opacity: .85; } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(2.6); } }
+@keyframes mh-card-out { 0% { opacity: 0; transform: scale(.34); } 25% { opacity: 1; transform: scale(.34); } 100% { opacity: 1; transform: none; } }
+@keyframes mh-fade { to { opacity: 0; transform: scale(.97); } }
+
+/* 1. Delivery: it rolls in, wheels turning. 2. Waiting: the engine idles. */
+.mh-roll { animation: mh-roll-in 1300ms cubic-bezier(.2, .75, .3, 1) both; }
+.mh-wheel { animation: mh-spin 1300ms cubic-bezier(.2, .75, .3, 1) both; }
+.is-waiting .mh-idle { animation: mh-idle .45s ease-in-out infinite; }
+/* 3. Opening: the door swings out, smoke drifts and clears, the card comes out of the doorway. */
+.mh-card, .mh-smoke { opacity: 0; }
+.mh-door { transform-origin: 0 50%; }
+.is-opening .mh-door { animation: mh-door-open 650ms cubic-bezier(.45, .05, .3, 1) both; }
+.is-opening .mh-smoke { animation: mh-smoke 1500ms ease-out both; }
+.is-opening .mh-card { animation: mh-card-out 1300ms cubic-bezier(.3, .7, .25, 1) 450ms both; }
+.is-opening .mh-van-fade { animation: mh-fade 600ms ease-in 1100ms forwards; }
+.is-opening .mh-lift { animation: og-lift 900ms cubic-bezier(.25, .8, .25, 1) 1800ms forwards; }
+
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   .amb, .flyer, .flyer-bob, .orbit, .timer-urgent, .tick, .shake, .ok-bump, .rv-seal-ring, .carousel.nudge > .slide { animation: none !important; }

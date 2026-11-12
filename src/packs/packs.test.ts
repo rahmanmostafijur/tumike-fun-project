@@ -11,10 +11,10 @@ describe('pack registry', () => {
     expect(packs.length).toBeGreaterThanOrEqual(2)
   })
 
-  test('carousel order: Harry Potter first; Money Heist playable in its place among four coming-soon packs', () => {
+  test('carousel order is fixed; the finished universes are playable, the rest coming soon', () => {
+    const PLAYABLE = ['harry-potter', 'breaking-bad', 'money-heist']
     expect(listedPacks.map((p) => p.id)).toEqual(['harry-potter', 'tin-goyenda', 'himu-misir-ali', 'breaking-bad', 'money-heist', 'game-of-thrones'])
-    expect(listedPacks.filter((p) => p.status === 'coming-soon').map((p) => p.id)).toEqual(['tin-goyenda', 'himu-misir-ali', 'breaking-bad', 'game-of-thrones'])
-    expect(getPack('money-heist')).toBeDefined()
+    listedPacks.forEach((p) => expect(p.status).toBe(PLAYABLE.includes(p.id) ? 'playable' : 'coming-soon'))
   })
 
   test('coming-soon packs can never start a game', () => {
@@ -29,6 +29,15 @@ describe('pack registry', () => {
     expect(getPack('sample-space')?.background).toBeUndefined()
     expect(listedPacks.map((p) => p.id)).not.toContain('sample-space')
   })
+})
+
+describe('content rules hold for every playable pack', () => {
+  for (const pack of packs.filter((p) => p.listed)) {
+    test(`${pack.id}: half the knowledge questions open with a memory; scenarios have at most one dark option`, () => {
+      expect(pack.knowledge.filter((q) => q.memory).length * 2).toBeGreaterThanOrEqual(pack.knowledge.length)
+      pack.scenarios.forEach((s) => expect(s.options.filter((o) => o.dark).length).toBeLessThanOrEqual(1))
+    })
+  }
 })
 
 describe('every pack always produces a real result', () => {

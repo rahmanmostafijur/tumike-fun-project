@@ -5,6 +5,7 @@ import { Monogram } from '../components/Monogram'
 import { useSceneryView } from '../scenery/view'
 import { cx, haptic, monogramOf, prefersReducedMotion } from '../util'
 import { LetterSequence, letterDeliverMs } from './reveal/LetterSequence'
+import { MOTORHOME_DELIVER_MS, MotorhomeSequence } from './reveal/MotorhomeSequence'
 import { ORIGAMI_DELIVER_MS, OrigamiSequence } from './reveal/OrigamiSequence'
 import type { RevealPhase } from './reveal/shared'
 
@@ -33,7 +34,10 @@ export function Reveal({ pack, character, rarity, playerName, onDone }: RevealPr
   const reduced = prefersReducedMotion()
   const reveal = pack.reveal
   const flyer = !reduced && reveal.kind === 'letter' ? pack.background?.flyer : undefined
-  const deliverMs = reveal.kind === 'origami' ? ORIGAMI_DELIVER_MS : letterDeliverMs(Boolean(flyer))
+  const deliverMs =
+    reveal.kind === 'origami' ? ORIGAMI_DELIVER_MS
+    : reveal.kind === 'motorhome' ? MOTORHOME_DELIVER_MS
+    : letterDeliverMs(Boolean(flyer))
   const [phase, setPhase] = useState<RevealPhase>('deliver')
   const phaseRef = useRef<RevealPhase>('deliver')
   const done = useRef(false)
@@ -110,11 +114,9 @@ export function Reveal({ pack, character, rarity, playerName, onDone }: RevealPr
       </div>
 
       <div className="rv-stage relative mt-[clamp(130px,25vh,230px)] grid place-items-center">
-        {reveal.kind === 'letter' ? (
-          <LetterSequence {...sequence} reveal={reveal} flyer={flyer} playerName={playerName} />
-        ) : (
-          <OrigamiSequence {...sequence} reveal={reveal} />
-        )}
+        {reveal.kind === 'letter' && <LetterSequence {...sequence} reveal={reveal} flyer={flyer} playerName={playerName} />}
+        {reveal.kind === 'origami' && <OrigamiSequence {...sequence} reveal={reveal} />}
+        {reveal.kind === 'motorhome' && <MotorhomeSequence {...sequence} reveal={reveal} />}
       </div>
 
       <p className={cx('rv-hint relative mt-7 rounded-full bg-bg/80 px-4 py-1 text-[14px] font-medium text-ink', phase !== 'waiting' && 'opacity-0')} aria-live="polite">
