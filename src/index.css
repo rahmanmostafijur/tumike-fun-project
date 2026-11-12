@@ -447,6 +447,36 @@ button:disabled { cursor: default; }
 .is-opening .sc-face { animation: fade-in 450ms ease 1250ms both; }
 .is-opening .sc-lift { animation: og-lift 900ms cubic-bezier(.25, .8, .25, 1) 1800ms forwards; }
 
+/* ---------- Reveal: moonlight and a folded letter ---------- */
+@keyframes ml-glow-in { from { opacity: 0; transform: scale(.7); } to { opacity: 1; transform: none; } }
+@keyframes ml-glow-pulse { 0%, 100% { opacity: .8; } 50% { opacity: 1; } }
+@keyframes ml-glow-flare { 0% { opacity: 1; transform: none; } 30% { transform: scale(1.18); } 100% { opacity: .55; transform: scale(1.1); } }
+@keyframes ml-drift-in {
+  0% { opacity: 0; transform: translate(-40px, -60vh) rotate(-14deg); }
+  15% { opacity: 1; }
+  40% { transform: translate(34px, -30vh) rotate(9deg); }
+  70% { transform: translate(-18px, -8vh) rotate(-5deg); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes ml-rest { 0%, 100% { transform: translateY(0) rotate(-.6deg); } 50% { transform: translateY(-4px) rotate(.6deg); } }
+@keyframes ml-unfold-top { from { transform: perspective(700px) rotateX(-180deg); } to { transform: perspective(700px) rotateX(0); } }
+@keyframes ml-unfold-bottom { from { transform: perspective(700px) rotateX(180deg); } to { transform: perspective(700px) rotateX(0); } }
+
+/* 1. Delivery: the moonlight comes up and the letter drifts down. 2. Waiting: it rests, the light breathes. */
+.ml-glow { animation: ml-glow-in 1400ms ease-out both; }
+.is-waiting .ml-glow { animation: ml-glow-pulse 2.8s ease-in-out infinite; }
+.ml-drift { animation: ml-drift-in 1450ms cubic-bezier(.35, .4, .3, 1) both; }
+.is-waiting .ml-lift { animation: ml-rest 3s ease-in-out infinite; }
+/* 3. Opening: the light flares, the letter unfolds top then bottom, and becomes the card. */
+.ml-fold-top { transform: perspective(700px) rotateX(-180deg); }
+.ml-fold-bottom { transform: perspective(700px) rotateX(180deg); }
+.ml-face { opacity: 0; }
+.is-opening .ml-glow { animation: ml-glow-flare 1600ms ease-out both; }
+.is-opening .ml-fold-top { animation: ml-unfold-top 650ms cubic-bezier(.4, 0, .25, 1) 150ms both; }
+.is-opening .ml-fold-bottom { animation: ml-unfold-bottom 650ms cubic-bezier(.4, 0, .25, 1) 450ms both; }
+.is-opening .ml-face { animation: fade-in 450ms ease 1150ms both; }
+.is-opening .ml-lift { animation: og-lift 900ms cubic-bezier(.25, .8, .25, 1) 1700ms forwards; }
+
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   .amb, .flyer, .flyer-bob, .orbit, .timer-urgent, .tick, .shake, .ok-bump, .rv-seal-ring, .carousel.nudge > .slide { animation: none !important; }

@@ -12,7 +12,7 @@ describe('pack registry', () => {
   })
 
   test('carousel order is fixed; the finished universes are playable, the rest coming soon', () => {
-    const PLAYABLE = ['harry-potter', 'breaking-bad', 'money-heist', 'game-of-thrones']
+    const PLAYABLE = ['harry-potter', 'himu-misir-ali', 'breaking-bad', 'money-heist', 'game-of-thrones']
     expect(listedPacks.map((p) => p.id)).toEqual(['harry-potter', 'tin-goyenda', 'himu-misir-ali', 'breaking-bad', 'money-heist', 'game-of-thrones'])
     listedPacks.forEach((p) => expect(p.status).toBe(PLAYABLE.includes(p.id) ? 'playable' : 'coming-soon'))
   })

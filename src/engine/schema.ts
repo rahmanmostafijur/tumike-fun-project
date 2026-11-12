@@ -210,12 +210,22 @@ export const ScrollRevealSchema = z.object({
   scroll: z.object({ paper: hex, roller: hex, seal: hex, sealInk: hex, raven: hex, rim: hex }),
 })
 
-export const RevealSchema = z.discriminatedUnion('kind', [LetterRevealSchema, OrigamiRevealSchema, MotorhomeRevealSchema, ScrollRevealSchema])
+/** Moonlight brightens and a folded letter drifts down; tap it and it unfolds into the card. */
+export const MoonlightRevealSchema = z.object({
+  kind: z.literal('moonlight'),
+  ...RevealCopy,
+  letter: z.object({ paper: hex, ink: hex, glow: hex }),
+})
+
+export const RevealSchema = z.discriminatedUnion('kind', [
+  LetterRevealSchema, OrigamiRevealSchema, MotorhomeRevealSchema, ScrollRevealSchema, MoonlightRevealSchema,
+])
 export type Reveal = z.infer<typeof RevealSchema>
 export type LetterReveal = z.infer<typeof LetterRevealSchema>
 export type OrigamiReveal = z.infer<typeof OrigamiRevealSchema>
 export type MotorhomeReveal = z.infer<typeof MotorhomeRevealSchema>
 export type ScrollReveal = z.infer<typeof ScrollRevealSchema>
+export type MoonlightReveal = z.infer<typeof MoonlightRevealSchema>
 
 /** How many knowledge and scenario questions a mode asks. */
 export const QuestionSplitSchema = z
