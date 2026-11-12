@@ -1,6 +1,8 @@
 import { describe, expect, test } from 'vitest'
 import { allPacks, getAnyPack, getPack, listedPacks, packErrors, packs } from './index'
-import { buildQuiz, fullLength } from '../engine/selection'
+import { buildQuiz, modeLength } from '../engine/selection'
+import { computeResult } from '../engine/scoring'
+import { TIERS } from '../engine/schema'
 import { createRng } from '../engine/rng'
 
 describe('pack registry', () => {
@@ -27,6 +29,33 @@ describe('pack registry', () => {
     expect(getPack('sample-space')?.background).toBeUndefined()
     expect(listedPacks.map((p) => p.id)).not.toContain('sample-space')
   })
+})
+
+describe('every pack always produces a real result', () => {
+  const answers = (right: number, total: number) => Array.from({ length: total }, (_, i) => ({ correct: i < right }))
+  const leaning = (trait: string, dark = false) => [1, 2, 3].map((stage) => ({ stage, weights: { [trait]: 2 }, dark }))
+  const SCORES = { legend: answers(6, 6), skilled: answers(3, 6), beginner: answers(1, 6) } as const
+
+  for (const pack of packs) {
+    const ids = new Set(pack.characters.map((c) => c.id))
+    test(`${pack.id}: every tier x trait, every dark tier and every secret lean resolve to a character`, () => {
+      for (const tier of TIERS) {
+        for (const { id: trait } of pack.traits) {
+          const r = computeResult(pack, 'quick', SCORES[tier], leaning(trait))
+          expect(ids.has(r.characterId)).toBe(true)
+          expect(pack.characters.find((c) => c.id === r.characterId)?.kind).toBe('regular')
+        }
+        const dark = computeResult(pack, 'quick', SCORES[tier], leaning(pack.traits[0]!.id, true))
+        expect(ids.has(dark.characterId)).toBe(true)
+        if (pack.characters.some((c) => c.kind === 'dark')) expect(dark.rarity).toBe('dark')
+      }
+      for (const { id: trait } of pack.traits) {
+        const secret = computeResult(pack, 'full', answers(8, 8), leaning(trait))
+        expect(secret.rarity).toBe('secret')
+        expect(ids.has(secret.characterId)).toBe(true)
+      }
+    })
+  }
 })
 
 describe('harry potter pack', () => {
@@ -61,7 +90,8 @@ describe('harry potter pack', () => {
     for (const pack of packs) {
       for (let seed = 1; seed <= 25; seed++) {
         expect(buildQuiz(pack, 'quick', createRng(seed)).items).toHaveLength(9)
-        expect(buildQuiz(pack, 'full', createRng(seed)).items).toHaveLength(fullLength(pack))
+        expect(buildQuiz(pack, 'quick', createRng(seed)).items).toHaveLength(modeLength(pack, 'quick'))
+        expect(buildQuiz(pack, 'full', createRng(seed)).items).toHaveLength(modeLength(pack, 'full'))
       }
     }
   })

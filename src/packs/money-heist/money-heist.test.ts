@@ -35,7 +35,7 @@ describe('money heist pack', () => {
     expect(pack).toBeDefined()
     expect(pack.stages).toHaveLength(5)
     expect(pack.stageLabel).toEqual({ bn: 'পর্ব', en: 'Part' })
-    expect(pack.fullLength).toBe(21)
+    expect(pack.modes?.full).toEqual({ knowledge: 14, scenario: 7 })
     expect(pack.reveal.kind).toBe('origami')
     expect(pack.reveal.lines[0]).toEqual({ bn: 'পরিকল্পনায় তোমার নামও ছিল।', en: 'Your name was in the plan.' })
     expect(pack.background?.journey).toHaveLength(5)

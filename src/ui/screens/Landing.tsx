@@ -1,6 +1,6 @@
 import { useId, type CSSProperties } from 'react'
 import { isPlayable, type AnyPack } from '../../engine/schema'
-import { QUICK_PATTERN, fullLength } from '../../engine/selection'
+import { DEFAULT_QUICK, modeLength } from '../../engine/selection'
 import { useI18n } from '../../i18n/I18n'
 import { APP } from '../../config'
 import { IconButton, PrimaryButton, SecondaryButton } from '../components/Button'
@@ -30,7 +30,8 @@ export function Landing({ packs, selected, onSelect, name, onNameChange, onStart
   const nameId = useId()
   useSceneryView('landing')
   const playable = isPlayable(selected)
-  const fullCount = playable ? fullLength(selected) : FULL_FALLBACK
+  const fullCount = playable ? modeLength(selected, 'full') : FULL_FALLBACK
+  const quickCount = playable ? modeLength(selected, 'quick') : DEFAULT_QUICK.knowledge + DEFAULT_QUICK.scenario
   // With a painting, the headline starts below the skyline at the top.
   const headlineTop = selected.background ? 'mt-[clamp(96px,calc(27vh-50px),196px)]' : 'mt-[clamp(20px,6vh,72px)]'
 
@@ -49,7 +50,7 @@ export function Landing({ packs, selected, onSelect, name, onNameChange, onStart
           {t('landing.headline')}
         </h1>
         <p className="mt-2 text-[15.5px] leading-[1.5] text-muted" style={{ '--i': 1 } as CSSProperties}>
-          {t('landing.subtitle', { q: QUICK_PATTERN.length, s: QUICK_SECONDS })}
+          {t('landing.subtitle', { q: quickCount, s: QUICK_SECONDS })}
         </p>
       </section>
 

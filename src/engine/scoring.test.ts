@@ -6,11 +6,13 @@ import {
   knowledgePercent,
   matchPercent,
   tierFor,
+  tiersByDistance,
   traitTotals,
   winningTrait,
   type ScenarioOutcome,
 } from './scoring'
 import { makeFixturePack } from './fixture.test-helper'
+import { PackSchema } from './schema'
 
 const T = { skilled: 40, legend: 75 }
 const ORDER = ['brave', 'clever', 'loyal']
@@ -143,5 +145,63 @@ describe('computeResult', () => {
     const r = computeResult(pack, 'quick', [k(true)], [s(1, { brave: 2 }), s(2, { brave: 1, clever: 1 })])
     expect(r.matchPercent).toBeGreaterThanOrEqual(60)
     expect(r.matchPercent).toBeLessThanOrEqual(99)
+  })
+})
+
+describe('small rosters fall back to the nearest filled slot', () => {
+  // Partial roster: legend-brave, beginner-clever, one skilled dark, and two secrets tied to traits.
+  const base = makeFixturePack(4)
+  const keep = new Set(['legend-brave', 'beginner-clever', 'skilled-dark'])
+  const pack = PackSchema.parse({
+    ...base,
+    roster: 'partial',
+    characters: [
+      ...base.characters.filter((c) => keep.has(c.id)),
+      { ...base.characters.find((c) => c.kind === 'secret')!, id: 'secret-brave', trait: 'brave' },
+      { ...base.characters.find((c) => c.kind === 'secret')!, id: 'secret-clever', trait: 'clever' },
+    ],
+  })
+  const answers = (right: number, total: number) => Array.from({ length: total }, (_, i) => ({ correct: i < right }))
+  const lean = (trait: string, dark = false) => [1, 2, 3].map((stage) => ({ stage, weights: { [trait]: 2 }, dark }))
+  const LEGEND = answers(6, 6)
+  const SKILLED = answers(3, 6)
+  const BEGINNER = answers(1, 6)
+
+  test('tiers are tried from the scored one outwards, higher first on a tie', () => {
+    expect(tiersByDistance('skilled')).toEqual(['skilled', 'legend', 'beginner'])
+    expect(tiersByDistance('beginner')).toEqual(['beginner', 'skilled', 'legend'])
+  })
+
+  test('an empty slot takes the same trait in the closest tier', () => {
+    const r = computeResult(pack, 'quick', SKILLED, lean('brave'))
+    expect(r.characterId).toBe('legend-brave')
+    expect(r.tier).toBe('legend') // the card shows the character's own tier
+    expect(computeResult(pack, 'quick', BEGINNER, lean('brave')).characterId).toBe('legend-brave')
+    expect(computeResult(pack, 'quick', LEGEND, lean('clever')).characterId).toBe('beginner-clever')
+  })
+
+  test('a trait with no characters at all falls back to the next-best trait', () => {
+    const solo = PackSchema.parse({ ...pack, characters: pack.characters.filter((c) => c.id !== 'beginner-clever') })
+    const outcomes = [{ stage: 1, weights: { clever: 3, brave: 1 }, dark: false }]
+    expect(computeResult(solo, 'quick', LEGEND, outcomes).characterId).toBe('legend-brave')
+  })
+
+  test('dark takes the closest dark tier, or a regular result when there is none', () => {
+    expect(computeResult(pack, 'quick', LEGEND, lean('brave', true)).characterId).toBe('skilled-dark')
+    const noDark = PackSchema.parse({ ...pack, characters: pack.characters.filter((c) => c.kind !== 'dark') })
+    expect(computeResult(noDark, 'quick', LEGEND, lean('brave', true)).characterId).toBe('legend-brave')
+  })
+
+  test('with several secrets, the one matching the stronger lean wins', () => {
+    expect(computeResult(pack, 'full', answers(8, 8), lean('clever')).characterId).toBe('secret-clever')
+    expect(computeResult(pack, 'full', answers(8, 8), lean('brave')).characterId).toBe('secret-brave')
+  })
+
+  test('the schema keeps full rosters strict and partial rosters sane', () => {
+    expect(PackSchema.safeParse({ ...pack, roster: 'full' }).success).toBe(false)
+    const twoInSlot = [...pack.characters, { ...pack.characters[0]!, id: 'dupe-slot' }]
+    expect(PackSchema.safeParse({ ...pack, characters: twoInSlot }).success).toBe(false)
+    const sameSecretTrait = pack.characters.map((c) => (c.id === 'secret-clever' ? { ...c, trait: 'brave' } : c))
+    expect(PackSchema.safeParse({ ...pack, characters: sameSecretTrait }).success).toBe(false)
   })
 })

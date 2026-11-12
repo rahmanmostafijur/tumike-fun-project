@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { DEFAULT_PER_STAGE, QUICK_PATTERN, countKinds, fullJourneyPlan } from './selection'
+import { questionSplit } from './selection'
 
 /**
  * Pack schema. A pack is plain data: everything a universe needs to run
@@ -201,6 +201,11 @@ export type Reveal = z.infer<typeof RevealSchema>
 export type LetterReveal = z.infer<typeof LetterRevealSchema>
 export type OrigamiReveal = z.infer<typeof OrigamiRevealSchema>
 
+/** How many knowledge and scenario questions a mode asks. */
+export const QuestionSplitSchema = z
+  .object({ knowledge: z.number().int().min(0).max(30), scenario: z.number().int().min(0).max(30) })
+  .refine((s) => s.knowledge + s.scenario >= 3, 'a mode needs at least 3 questions')
+
 export const PackSchema = z
   .object({
     status: z.literal('playable').default('playable'),
@@ -218,8 +223,17 @@ export const PackSchema = z
     theme: ThemeSchema,
     stageLabel: LocalizedSchema,
     stages: z.array(StageSchema).min(3).max(12),
-    /** Questions in the full journey. Defaults to three per stage. */
-    fullLength: z.number().int().min(6).max(30).optional(),
+    /**
+     * Knowledge / scenario split per mode. Defaults: quick 6 + 3, full journey
+     * 2 + 1 per stage. Personality-led packs can ask more scenarios.
+     */
+    modes: z.object({ quick: QuestionSplitSchema.optional(), full: QuestionSplitSchema.optional() }).optional(),
+    /**
+     * `full`: every tier x trait slot has exactly one character, plus one dark
+     * character per tier. `partial`: a smaller roster; empty slots fall back to
+     * the nearest filled one when scoring.
+     */
+    roster: z.enum(['full', 'partial']).default('full'),
     /** Optional painted background. Without it the app uses the plain theme colour. */
     background: BackgroundSchema.optional(),
     lifelines: z.object({ fifty: LocalizedSchema, freeze: LocalizedSchema, swap: LocalizedSchema }),
@@ -261,23 +275,7 @@ export const PackSchema = z
     pack.knowledge.forEach((q, i) => unique(`q:${q.id}`, ['knowledge', i]))
     pack.scenarios.forEach((q, i) => unique(`q:${q.id}`, ['scenarios', i]))
 
-    // Character grid: one regular per tier x trait, one dark per tier, one secret.
-    for (const tier of TIERS) {
-      for (const trait of traitIds) {
-        const n = pack.characters.filter((c) => c.kind === 'regular' && c.tier === tier && c.trait === trait).length
-        if (n !== 1) issue(`expected exactly one ${tier} ${trait} character, found ${n}`, ['characters'])
-      }
-      const dark = pack.characters.filter((c) => c.kind === 'dark' && c.tier === tier).length
-      if (dark !== 1) issue(`expected exactly one dark ${tier} character, found ${dark}`, ['characters'])
-    }
-    const secrets = pack.characters.filter((c) => c.kind === 'secret').length
-    if (secrets !== 1) issue(`expected exactly one secret character, found ${secrets}`, ['characters'])
-    pack.characters.forEach((c, i) => {
-      if (c.kind === 'regular' && (!c.tier || !c.trait || !traitIds.has(c.trait))) {
-        issue('regular characters need a tier and a known trait', ['characters', i])
-      }
-      if (c.kind === 'dark' && !c.tier) issue('dark characters need a tier', ['characters', i])
-    })
+    checkRoster(pack, traitIds, issue)
 
     pack.knowledge.forEach((q, i) => {
       if (q.stage > stageCount) issue(`stage ${q.stage} does not exist`, ['knowledge', i, 'stage'])
@@ -294,12 +292,12 @@ export const PackSchema = z
     })
 
     // Enough questions for both modes, plus at least one spare for the swap lifeline.
-    const quick = countKinds(QUICK_PATTERN)
-    const length = pack.fullLength ?? stageCount * DEFAULT_PER_STAGE
-    if (length < stageCount) issue('fullLength must give every stage at least one question', ['fullLength'])
-    const full = countKinds(fullJourneyPlan(stageCount, length).map((s) => s.kind))
-    const needKnowledge = Math.max(quick.knowledge, full.knowledge) + 1
-    const needScenarios = Math.max(quick.scenario, full.scenario) + 1
+    const quick = questionSplit(pack, 'quick')
+    const full = questionSplit(pack, 'full')
+    if (full.knowledge + full.scenario < stageCount) issue('the full journey must give every stage at least one question', ['modes', 'full'])
+    const spare = (n: number) => (n > 0 ? n + 1 : 0)
+    const needKnowledge = spare(Math.max(quick.knowledge, full.knowledge))
+    const needScenarios = spare(Math.max(quick.scenario, full.scenario))
     if (pack.knowledge.length < needKnowledge) {
       issue(`need at least ${needKnowledge} knowledge questions`, ['knowledge'])
     }
@@ -307,6 +305,42 @@ export const PackSchema = z
       issue(`need at least ${needScenarios} scenario questions`, ['scenarios'])
     }
   })
+
+type Issue = (message: string, path?: (string | number)[]) => void
+
+/**
+ * Roster rules. Full roster: exactly one regular per tier x trait and one dark
+ * per tier. Partial roster: at most one per slot, at least one regular. Both:
+ * at least one secret; several secrets each need their own trait, which
+ * decides who the secret is.
+ */
+function checkRoster(pack: { roster: 'full' | 'partial'; characters: readonly Character[] }, traitIds: ReadonlySet<string>, issue: Issue) {
+  const full = pack.roster === 'full'
+  const chars = pack.characters
+  for (const tier of TIERS) {
+    for (const trait of traitIds) {
+      const n = chars.filter((c) => c.kind === 'regular' && c.tier === tier && c.trait === trait).length
+      if (full ? n !== 1 : n > 1) issue(`expected ${full ? 'exactly' : 'at most'} one ${tier} ${trait} character, found ${n}`, ['characters'])
+    }
+    const dark = chars.filter((c) => c.kind === 'dark' && c.tier === tier).length
+    if (full ? dark !== 1 : dark > 1) issue(`expected ${full ? 'exactly' : 'at most'} one dark ${tier} character, found ${dark}`, ['characters'])
+  }
+  if (!chars.some((c) => c.kind === 'regular')) issue('a pack needs at least one regular character', ['characters'])
+  const secrets = chars.filter((c) => c.kind === 'secret')
+  if (secrets.length === 0) issue('a pack needs a secret character', ['characters'])
+  if (secrets.length > 1) {
+    const traits = secrets.map((c) => c.trait)
+    if (traits.some((t) => !t || !traitIds.has(t)) || new Set(traits).size !== traits.length) {
+      issue('several secret characters each need their own known trait', ['characters'])
+    }
+  }
+  chars.forEach((c, i) => {
+    if (c.kind === 'regular' && (!c.tier || !c.trait || !traitIds.has(c.trait))) {
+      issue('regular characters need a tier and a known trait', ['characters', i])
+    }
+    if (c.kind === 'dark' && !c.tier) issue('dark characters need a tier', ['characters', i])
+  })
+}
 
 export type PackInput = z.input<typeof PackSchema>
 /** A playable pack: questions, characters and everything a game needs. */

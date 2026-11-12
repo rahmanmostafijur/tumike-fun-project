@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { buildQuiz, countKinds, fullJourneyPlan, fullLength, quickDifficulties, stageForPosition, swapQuestion } from './selection'
+import { DEFAULT_QUICK, buildQuiz, fullJourneyPlan, kindsFor, modeLength, questionSplit, quickDifficulties, stageForPosition, swapQuestion } from './selection'
 import { PackSchema, type Pack } from './schema'
 import { createRng } from './rng'
 import { makeFixturePack } from './fixture.test-helper'
@@ -62,16 +62,28 @@ describe('buildQuiz', () => {
   })
 })
 
-describe('configurable stage count', () => {
-  const perStage = (stageCount: number, length?: number) => {
+describe('configurable stage count and question split', () => {
+  const MH_FULL = { knowledge: 14, scenario: 7 }
+  const perStage = (stageCount: number, split?: { knowledge: number; scenario: number }) => {
     const counts = Array.from({ length: stageCount }, () => 0)
-    fullJourneyPlan(stageCount, length).forEach((s) => counts[s.stageIndex]!++)
+    fullJourneyPlan(stageCount, split).forEach((s) => counts[s.stageIndex]!++)
     return counts
   }
+  const count = (kinds: readonly string[], kind: string) => kinds.filter((k) => k === kind).length
 
-  test('7 stages x 21 questions is exactly the old shape: K K S in every stage', () => {
-    const plan = fullJourneyPlan(7, 21)
-    expect(perStage(7, 21)).toEqual([3, 3, 3, 3, 3, 3, 3])
+  test('the default quick split is the old K K S rhythm', () => {
+    expect(kindsFor(DEFAULT_QUICK).join(' ')).toBe('knowledge knowledge scenario knowledge knowledge scenario knowledge knowledge scenario')
+  })
+
+  test('a scenario-heavy split spreads the knowledge questions evenly', () => {
+    expect(kindsFor({ knowledge: 3, scenario: 6 }).map((k) => k[0]).join('')).toBe('kssksskss')
+    const full = kindsFor({ knowledge: 8, scenario: 10 })
+    expect([count(full, 'knowledge'), count(full, 'scenario')]).toEqual([8, 10])
+  })
+
+  test('7 stages with the default split is exactly the old shape: K K S in every stage', () => {
+    const plan = fullJourneyPlan(7)
+    expect(perStage(7)).toEqual([3, 3, 3, 3, 3, 3, 3])
     plan.forEach((slot, i) => {
       expect(slot.stageIndex).toBe(Math.floor(i / 3))
       expect(slot.kind).toBe(i % 3 === 2 ? 'scenario' : 'knowledge')
@@ -79,23 +91,30 @@ describe('configurable stage count', () => {
   })
 
   test('5 stages x 21 questions spreads 5, 4, 4, 4, 4 and keeps the 2:1 rhythm', () => {
-    const plan = fullJourneyPlan(5, 21)
-    expect(perStage(5, 21)).toEqual([5, 4, 4, 4, 4])
-    expect(countKinds(plan.map((s) => s.kind))).toEqual({ knowledge: 14, scenario: 7 })
+    const plan = fullJourneyPlan(5, MH_FULL)
+    expect(perStage(5, MH_FULL)).toEqual([5, 4, 4, 4, 4])
+    expect([count(plan.map((s) => s.kind), 'knowledge'), count(plan.map((s) => s.kind), 'scenario')]).toEqual([14, 7])
     plan.slice(1).forEach((s, i) => expect(s.stageIndex).toBeGreaterThanOrEqual(plan[i]?.stageIndex ?? 0))
   })
 
-  test('without a pack length it falls back to three per stage', () => {
+  test('without a pack split it falls back to the defaults', () => {
     expect(fullJourneyPlan(3)).toHaveLength(9)
-    expect(fullLength({ stages: makeFixturePack(4).stages })).toBe(12)
-    expect(fullLength({ stages: makeFixturePack(5).stages, fullLength: 21 })).toBe(21)
+    expect(modeLength({ stages: makeFixturePack(4).stages }, 'full')).toBe(12)
+    expect(modeLength({ stages: makeFixturePack(4).stages }, 'quick')).toBe(9)
+    expect(questionSplit({ stages: makeFixturePack(5).stages, modes: { full: MH_FULL } }, 'full')).toEqual(MH_FULL)
+  })
+
+  test('buildQuiz follows a pack quick split', () => {
+    const pack: Pack = { ...makeFixturePack(4), modes: { quick: { knowledge: 3, scenario: 6 } } }
+    const quick = buildQuiz(pack, 'quick', createRng(4))
+    expect(quick.items.map((i) => i.kind[0]).join('')).toBe('kssksskss')
   })
 
   test('buildQuiz follows the pack length and stage count', () => {
-    const pack: Pack = { ...makeFixturePack(5), fullLength: 21 }
+    const pack: Pack = { ...makeFixturePack(5), modes: { full: MH_FULL } }
     const full = buildQuiz(pack, 'full', createRng(9))
     expect(full.items).toHaveLength(21)
-    expect(full.items.map((i) => i.stageIndex)).toEqual(fullJourneyPlan(5, 21).map((s) => s.stageIndex))
+    expect(full.items.map((i) => i.stageIndex)).toEqual(fullJourneyPlan(5, MH_FULL).map((s) => s.stageIndex))
     full.items.forEach((item) => {
       if (item.kind !== 'knowledge') return
       expect(pack.knowledge.find((q) => q.id === item.questionId)?.stage).toBe(item.stageIndex + 1)
@@ -109,7 +128,7 @@ describe('configurable stage count', () => {
   test('the schema rejects a pack with too few questions for its journey', () => {
     const small = makeFixturePack(3) // 15 knowledge, 6 scenarios
     expect(PackSchema.safeParse(small).success).toBe(true)
-    const result = PackSchema.safeParse({ ...small, fullLength: 21 }) // needs 15 knowledge and 8 scenarios
+    const result = PackSchema.safeParse({ ...small, modes: { full: MH_FULL } }) // needs 15 knowledge and 8 scenarios
     expect(result.success).toBe(false)
     expect(result.error?.issues.map((i) => i.message)).toContain('need at least 8 scenario questions')
   })

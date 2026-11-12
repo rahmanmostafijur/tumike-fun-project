@@ -20,17 +20,42 @@ export interface Quiz {
   retired: string[]
 }
 
-/** Quick mode: 9 questions, 6 knowledge + 3 scenario, in K K S rhythm. */
-export const QUICK_PATTERN: readonly QuestionKind[] = [
-  'knowledge', 'knowledge', 'scenario',
-  'knowledge', 'knowledge', 'scenario',
-  'knowledge', 'knowledge', 'scenario',
-]
+/** How many questions of each kind a mode asks. */
+export interface QuestionSplit {
+  knowledge: number
+  scenario: number
+}
 
-/** Full journey rhythm: two knowledge questions, then a scenario, repeated. */
-export const FULL_RHYTHM: readonly QuestionKind[] = ['knowledge', 'knowledge', 'scenario']
-/** Questions per stage when a pack does not set its own journey length. */
-export const DEFAULT_PER_STAGE = 3
+/** Quick mode unless the pack says otherwise: 9 questions, 6 knowledge + 3 scenario. */
+export const DEFAULT_QUICK: QuestionSplit = { knowledge: 6, scenario: 3 }
+/** Full journey unless the pack says otherwise: per stage, 2 knowledge + 1 scenario. */
+export const DEFAULT_PER_STAGE: QuestionSplit = { knowledge: 2, scenario: 1 }
+
+/** The pack's own split for a mode, or the default. */
+export function questionSplit(pack: Pick<Pack, 'stages' | 'modes'>, mode: Mode): QuestionSplit {
+  const own = pack.modes?.[mode]
+  if (own) return own
+  if (mode === 'quick') return DEFAULT_QUICK
+  const stages = pack.stages.length
+  return { knowledge: stages * DEFAULT_PER_STAGE.knowledge, scenario: stages * DEFAULT_PER_STAGE.scenario }
+}
+
+/** Number of questions a mode asks. */
+export function modeLength(pack: Pick<Pack, 'stages' | 'modes'>, mode: Mode): number {
+  const split = questionSplit(pack, mode)
+  return split.knowledge + split.scenario
+}
+
+/**
+ * Question kinds in play order: scenarios spread evenly, each closing a run of
+ * knowledge questions. 6 + 3 gives K K S K K S K K S; 3 + 6 gives K S S K S S K S S.
+ */
+export function kindsFor(split: QuestionSplit): QuestionKind[] {
+  const total = split.knowledge + split.scenario
+  return Array.from({ length: total }, (_, p) =>
+    Math.floor(((p + 1) * split.scenario) / total) > Math.floor((p * split.scenario) / total) ? 'scenario' : 'knowledge',
+  )
+}
 
 export interface PlannedSlot {
   kind: QuestionKind
@@ -38,30 +63,20 @@ export interface PlannedSlot {
   stageIndex: number
 }
 
-/** Full journey length: the pack's own `fullLength`, or three per stage. */
-export function fullLength(pack: Pick<Pack, 'stages' | 'fullLength'>): number {
-  return pack.fullLength ?? pack.stages.length * DEFAULT_PER_STAGE
-}
-
 /**
- * The full journey's slots: `length` questions in the K K S rhythm, spread
- * evenly over the stages from first to last. 21 over 7 stages is exactly
- * three each; 21 over 5 stages is 5, 4, 4, 4, 4.
+ * The full journey's slots, spread evenly over the stages from first to last.
+ * 14 + 7 over 7 stages is exactly K K S per stage; over 5 stages it is 5, 4, 4, 4, 4.
  */
-export function fullJourneyPlan(stageCount: number, length = stageCount * DEFAULT_PER_STAGE): PlannedSlot[] {
+export function fullJourneyPlan(
+  stageCount: number,
+  split: QuestionSplit = { knowledge: stageCount * DEFAULT_PER_STAGE.knowledge, scenario: stageCount * DEFAULT_PER_STAGE.scenario },
+): PlannedSlot[] {
   const stages = Math.max(1, stageCount)
-  return Array.from({ length }, (_, position) => ({
-    kind: FULL_RHYTHM[position % FULL_RHYTHM.length] ?? 'knowledge',
-    stageIndex: Math.min(stages - 1, Math.floor((position * stages) / length)),
+  const kinds = kindsFor(split)
+  return kinds.map((kind, position) => ({
+    kind,
+    stageIndex: Math.min(stages - 1, Math.floor((position * stages) / kinds.length)),
   }))
-}
-
-/** How many questions of each kind a list of kinds needs. */
-export function countKinds(kinds: readonly QuestionKind[]): Record<QuestionKind, number> {
-  return {
-    knowledge: kinds.filter((k) => k === 'knowledge').length,
-    scenario: kinds.filter((k) => k === 'scenario').length,
-  }
 }
 
 /** Stage index for a question position, spreading `total` questions over `stageCount` stages. */
@@ -112,16 +127,18 @@ export function buildQuiz(pack: Pack, mode: Mode, rng: Rng): Quiz {
     items.push(makeItem(kind, q.id, stageIndex, rng))
   }
 
+  const split = questionSplit(pack, mode)
   if (mode === 'quick') {
-    const difficulties = quickDifficulties(stageCount)
+    const kinds = kindsFor(split)
+    const difficulties = quickDifficulties(stageCount, split.knowledge)
     let k = 0
-    QUICK_PATTERN.forEach((kind, position) => {
-      const stageIndex = stageForPosition(position, QUICK_PATTERN.length, stageCount)
+    kinds.forEach((kind, position) => {
+      const stageIndex = stageForPosition(position, kinds.length, stageCount)
       const target = kind === 'knowledge' ? (difficulties[k++] ?? 1) : stageIndex + 1
       take(kind, target, stageIndex)
     })
   } else {
-    fullJourneyPlan(stageCount, fullLength(pack)).forEach(({ kind, stageIndex }) => take(kind, stageIndex + 1, stageIndex))
+    fullJourneyPlan(stageCount, split).forEach(({ kind, stageIndex }) => take(kind, stageIndex + 1, stageIndex))
   }
 
   return { mode, items, retired: [] }

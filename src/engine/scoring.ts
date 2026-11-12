@@ -1,4 +1,4 @@
-import type { Character, Pack, Rarity, Tier } from './schema'
+import { TIERS, type Character, type Pack, type Rarity, type Tier } from './schema'
 import type { Mode } from './selection'
 
 /** A knowledge answer reduced to what scoring needs. */
@@ -97,20 +97,55 @@ export function matchPercent(totals: Readonly<Record<string, number>>, winner: s
   return Math.round(MATCH_MIN + (MATCH_MAX - MATCH_MIN) * norm)
 }
 
-/** Finds the character for a tier x trait, honouring dark and secret overrides. */
+/**
+ * Every trait, best first: the winner, then the rest by total (pack order on
+ * ties). Small rosters walk this list to find the closest filled slot.
+ */
+export function traitRanking(outcomes: readonly ScenarioOutcome[], traitOrder: readonly string[]): string[] {
+  const totals = traitTotals(outcomes, traitOrder)
+  const winner = winningTrait(outcomes, traitOrder)
+  const rest = traitOrder.filter((t) => t !== winner).sort((a, b) => (totals[b] ?? 0) - (totals[a] ?? 0))
+  return [winner, ...rest]
+}
+
+/** Tiers from the given one outwards; on equal distance the higher tier comes first. */
+export function tiersByDistance(tier: Tier): Tier[] {
+  const at = TIERS.indexOf(tier)
+  return [...TIERS].sort((a, b) => Math.abs(TIERS.indexOf(a) - at) - Math.abs(TIERS.indexOf(b) - at) || TIERS.indexOf(b) - TIERS.indexOf(a))
+}
+
+/**
+ * Finds the character for a tier and trait ranking, honouring secret and dark.
+ * Full rosters always hit their exact slot. Small rosters fall back to the
+ * nearest filled slot: the same trait in the closest tier first, then the
+ * next-best trait. Several secrets: the one whose trait the player leaned to most.
+ */
 export function resolveCharacter(
   characters: readonly Character[],
   tier: Tier,
-  trait: string,
+  ranking: readonly string[],
   flags: { dark: boolean; secret: boolean },
 ): Character {
-  const find = (pred: (c: Character) => boolean) => characters.find(pred)
-  const pick =
-    (flags.secret ? find((c) => c.kind === 'secret') : undefined) ??
-    (flags.dark ? find((c) => c.kind === 'dark' && c.tier === tier) : undefined) ??
-    find((c) => c.kind === 'regular' && c.tier === tier && c.trait === trait)
-  if (!pick) throw new Error(`No character for ${tier} / ${trait}`)
-  return pick
+  const tiers = tiersByDistance(tier)
+  const of = (kind: Character['kind']) => characters.filter((c) => c.kind === kind)
+
+  if (flags.secret) {
+    const secrets = of('secret')
+    const pick = (secrets.length > 1 ? ranking.map((t) => secrets.find((c) => c.trait === t)).find(Boolean) : undefined) ?? secrets[0]
+    if (pick) return pick
+  }
+  if (flags.dark) {
+    const pick = tiers.map((t) => of('dark').find((c) => c.tier === t)).find(Boolean)
+    if (pick) return pick
+  }
+  const regulars = of('regular')
+  for (const trait of ranking) {
+    const pick = tiers.map((t) => regulars.find((c) => c.tier === t && c.trait === trait)).find(Boolean)
+    if (pick) return pick
+  }
+  const any = regulars[0] ?? characters[0]
+  if (!any) throw new Error(`No character for ${tier} / ${ranking[0] ?? '?'}`)
+  return any
 }
 
 export function rarityOf(character: Character): Rarity {
@@ -141,11 +176,14 @@ export function computeResult(
 ): QuizResult {
   const traitOrder = pack.traits.map((t) => t.id)
   const percent = knowledgePercent(knowledge)
-  const tier = tierFor(percent, pack.tiers.thresholds)
-  const trait = winningTrait(scenarios, traitOrder)
+  const scoredTier = tierFor(percent, pack.tiers.thresholds)
+  const ranking = traitRanking(scenarios, traitOrder)
   const dark = isDarkSide(scenarios)
   const secret = isSecret(mode, percent, knowledge.length)
-  const character = resolveCharacter(pack.characters, tier, trait, { dark, secret })
+  const character = resolveCharacter(pack.characters, scoredTier, ranking, { dark, secret })
+  // On a small roster the character may sit in a neighbouring slot; the card shows its own tier and trait.
+  const tier = character.tier ?? scoredTier
+  const trait = character.trait ?? ranking[0] ?? ''
   return {
     characterId: character.id,
     tier,

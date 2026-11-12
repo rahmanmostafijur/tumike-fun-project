@@ -28,7 +28,7 @@ export default definePack({
     { id: 'the-bank', label: { bn: 'ব্যাংকের ভেতরে', en: 'Inside the bank' } },
     { id: 'the-last-night', label: { bn: 'লাল আলোর শেষ রাত', en: 'The last red-lit night' } },
   ],
-  fullLength: 21,
+  modes: { full: { knowledge: 14, scenario: 7 } },
   background: {
     src: background,
     width: 941,
