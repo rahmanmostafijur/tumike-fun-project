@@ -7,6 +7,7 @@ import { cx, haptic, monogramOf, prefersReducedMotion } from '../util'
 import { LetterSequence, letterDeliverMs } from './reveal/LetterSequence'
 import { MOTORHOME_DELIVER_MS, MotorhomeSequence } from './reveal/MotorhomeSequence'
 import { ORIGAMI_DELIVER_MS, OrigamiSequence } from './reveal/OrigamiSequence'
+import { SCROLL_DELIVER_MS, ScrollSequence } from './reveal/ScrollSequence'
 import type { RevealPhase } from './reveal/shared'
 
 /** If nobody taps, the item opens by itself this long after it arrives. */
@@ -37,6 +38,7 @@ export function Reveal({ pack, character, rarity, playerName, onDone }: RevealPr
   const deliverMs =
     reveal.kind === 'origami' ? ORIGAMI_DELIVER_MS
     : reveal.kind === 'motorhome' ? MOTORHOME_DELIVER_MS
+    : reveal.kind === 'scroll' ? SCROLL_DELIVER_MS
     : letterDeliverMs(Boolean(flyer))
   const [phase, setPhase] = useState<RevealPhase>('deliver')
   const phaseRef = useRef<RevealPhase>('deliver')
@@ -117,6 +119,7 @@ export function Reveal({ pack, character, rarity, playerName, onDone }: RevealPr
         {reveal.kind === 'letter' && <LetterSequence {...sequence} reveal={reveal} flyer={flyer} playerName={playerName} />}
         {reveal.kind === 'origami' && <OrigamiSequence {...sequence} reveal={reveal} />}
         {reveal.kind === 'motorhome' && <MotorhomeSequence {...sequence} reveal={reveal} />}
+        {reveal.kind === 'scroll' && <ScrollSequence {...sequence} reveal={reveal} />}
       </div>
 
       <p className={cx('rv-hint relative mt-7 rounded-full bg-bg/80 px-4 py-1 text-[14px] font-medium text-ink', phase !== 'waiting' && 'opacity-0')} aria-live="polite">

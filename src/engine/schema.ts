@@ -203,11 +203,19 @@ export const MotorhomeRevealSchema = z.object({
   van: z.object({ body: hex, stripe: hex, door: hex, window: hex, smoke: hex }),
 })
 
-export const RevealSchema = z.discriminatedUnion('kind', [LetterRevealSchema, OrigamiRevealSchema, MotorhomeRevealSchema])
+/** A raven brings a sealed scroll; tap the seal and the scroll unrolls into the card. */
+export const ScrollRevealSchema = z.object({
+  kind: z.literal('scroll'),
+  ...RevealCopy,
+  scroll: z.object({ paper: hex, roller: hex, seal: hex, sealInk: hex, raven: hex, rim: hex }),
+})
+
+export const RevealSchema = z.discriminatedUnion('kind', [LetterRevealSchema, OrigamiRevealSchema, MotorhomeRevealSchema, ScrollRevealSchema])
 export type Reveal = z.infer<typeof RevealSchema>
 export type LetterReveal = z.infer<typeof LetterRevealSchema>
 export type OrigamiReveal = z.infer<typeof OrigamiRevealSchema>
 export type MotorhomeReveal = z.infer<typeof MotorhomeRevealSchema>
+export type ScrollReveal = z.infer<typeof ScrollRevealSchema>
 
 /** How many knowledge and scenario questions a mode asks. */
 export const QuestionSplitSchema = z
