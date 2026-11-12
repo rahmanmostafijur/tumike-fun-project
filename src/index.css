@@ -105,6 +105,8 @@ button:disabled { cursor: default; }
 
 /* ---------- Landing carousel ---------- */
 .carousel {
+  /* Positioned so each slide's offsetLeft is measured in the scroller's own coordinates. */
+  position: relative;
   display: flex;
   gap: 12px;
   overflow-x: auto;
