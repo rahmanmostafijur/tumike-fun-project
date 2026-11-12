@@ -5,6 +5,7 @@ import { Monogram } from '../components/Monogram'
 import { useSceneryView } from '../scenery/view'
 import { cx, haptic, monogramOf, prefersReducedMotion } from '../util'
 import { LetterSequence, letterDeliverMs } from './reveal/LetterSequence'
+import { FLASHLIGHT_DELIVER_MS, FlashlightSequence } from './reveal/FlashlightSequence'
 import { MOONLIGHT_DELIVER_MS, MoonlightSequence } from './reveal/MoonlightSequence'
 import { MOTORHOME_DELIVER_MS, MotorhomeSequence } from './reveal/MotorhomeSequence'
 import { ORIGAMI_DELIVER_MS, OrigamiSequence } from './reveal/OrigamiSequence'
@@ -41,6 +42,7 @@ export function Reveal({ pack, character, rarity, playerName, onDone }: RevealPr
     : reveal.kind === 'motorhome' ? MOTORHOME_DELIVER_MS
     : reveal.kind === 'scroll' ? SCROLL_DELIVER_MS
     : reveal.kind === 'moonlight' ? MOONLIGHT_DELIVER_MS
+    : reveal.kind === 'flashlight' ? FLASHLIGHT_DELIVER_MS
     : letterDeliverMs(Boolean(flyer))
   const [phase, setPhase] = useState<RevealPhase>('deliver')
   const phaseRef = useRef<RevealPhase>('deliver')
@@ -123,6 +125,7 @@ export function Reveal({ pack, character, rarity, playerName, onDone }: RevealPr
         {reveal.kind === 'motorhome' && <MotorhomeSequence {...sequence} reveal={reveal} />}
         {reveal.kind === 'scroll' && <ScrollSequence {...sequence} reveal={reveal} />}
         {reveal.kind === 'moonlight' && <MoonlightSequence {...sequence} reveal={reveal} />}
+        {reveal.kind === 'flashlight' && <FlashlightSequence {...sequence} reveal={reveal} />}
       </div>
 
       <p className={cx('rv-hint relative mt-7 rounded-full bg-bg/80 px-4 py-1 text-[14px] font-medium text-ink', phase !== 'waiting' && 'opacity-0')} aria-live="polite">

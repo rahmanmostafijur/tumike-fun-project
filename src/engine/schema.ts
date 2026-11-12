@@ -217,8 +217,16 @@ export const MoonlightRevealSchema = z.object({
   letter: z.object({ paper: hex, ink: hex, glow: hex }),
 })
 
+/** A flashlight beam sweeps the scene and lands on a visiting card; tap it and it turns over into the card. */
+export const FlashlightRevealSchema = z.object({
+  kind: z.literal('flashlight'),
+  ...RevealCopy,
+  /** `mark` is printed large on the visiting card, `caption` under it. */
+  card: z.object({ paper: hex, ink: hex, beam: hex, mark: z.string().min(1).max(6), caption: LocalizedSchema }),
+})
+
 export const RevealSchema = z.discriminatedUnion('kind', [
-  LetterRevealSchema, OrigamiRevealSchema, MotorhomeRevealSchema, ScrollRevealSchema, MoonlightRevealSchema,
+  LetterRevealSchema, OrigamiRevealSchema, MotorhomeRevealSchema, ScrollRevealSchema, MoonlightRevealSchema, FlashlightRevealSchema,
 ])
 export type Reveal = z.infer<typeof RevealSchema>
 export type LetterReveal = z.infer<typeof LetterRevealSchema>
@@ -226,6 +234,7 @@ export type OrigamiReveal = z.infer<typeof OrigamiRevealSchema>
 export type MotorhomeReveal = z.infer<typeof MotorhomeRevealSchema>
 export type ScrollReveal = z.infer<typeof ScrollRevealSchema>
 export type MoonlightReveal = z.infer<typeof MoonlightRevealSchema>
+export type FlashlightReveal = z.infer<typeof FlashlightRevealSchema>
 
 /** How many knowledge and scenario questions a mode asks. */
 export const QuestionSplitSchema = z
