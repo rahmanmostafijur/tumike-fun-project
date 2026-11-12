@@ -64,6 +64,9 @@ export function makeFixturePack(stages = 4): Pack {
     characters,
     fanSince: { question: L('q'), options: [{ id: 'a', label: L('a'), badge: L('A') }, { id: 'b', label: L('b'), badge: L('B') }] },
     reveal: {
+      kind: 'letter',
+      hint: L('tap'),
+      tapLabel: L('open'),
       lines: [L('late')],
       address: L('{name}'),
       anonymous: L('you'),

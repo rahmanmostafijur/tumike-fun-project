@@ -357,6 +357,49 @@ button:disabled { cursor: default; }
 .is-opening .rv-line-2 { animation: rv-line 500ms ease 1100ms both; }
 .is-opening .rv-exit { animation: rv-envelope-out 380ms ease-in 2900ms forwards; }
 
+/* ---------- Reveal: the paper bird ---------- */
+@keyframes og-fly-in {
+  0% { opacity: 0; transform: translate(-72vw, -30vh) rotate(-16deg) scale(.55); }
+  12% { opacity: 1; }
+  75% { transform: translate(8px, 6px) rotate(5deg) scale(1.03); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes og-flap { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(-.5); } }
+@keyframes og-hover { 0%, 100% { transform: translateY(0) rotate(-1.5deg); } 50% { transform: translateY(-8px) rotate(1.5deg); } }
+@keyframes og-settle {
+  0% { opacity: 1; transform: none; }
+  55% { opacity: 1; transform: translateY(12px) rotate(-12deg) scale(.7); }
+  100% { opacity: 0; transform: translateY(16px) rotate(-18deg) scale(.4); }
+}
+/* The sheet starts as a small folded square (a diamond) and turns flat into the card shape. */
+@keyframes og-sheet-open {
+  0% { opacity: 0; transform: rotate(45deg) scale(.2, .28); }
+  30% { opacity: 1; transform: rotate(45deg) scale(.3, .42); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes og-flap-open { from { transform: perspective(600px); } to { transform: perspective(600px) var(--open); } }
+@keyframes og-fade-out { to { opacity: 0; } }
+@keyframes og-lift { to { transform: translateY(-36px) scale(1.04); } }
+
+/* 1. Delivery: the bird flies in, flapping. */
+.og-fly { animation: og-fly-in 1450ms cubic-bezier(.3, .6, .3, 1) both; }
+.og-wing { transform-box: fill-box; transform-origin: 50% 100%; animation: og-flap 280ms ease-in-out infinite; }
+.og-wing-far { animation-delay: 70ms; }
+/* 2. Waiting: it hovers with slow wingbeats until tapped. */
+.is-waiting .og-hover { animation: og-hover 2.4s ease-in-out infinite; }
+.is-waiting .og-wing { animation-duration: 1.2s; }
+/* 3. Opening: wings fold, the paper opens corner by corner and becomes the card. */
+.og-sheet, .og-face { opacity: 0; }
+.og-creases { opacity: .5; }
+.og-flap, .og-face { backface-visibility: hidden; }
+.is-opening .og-bird { animation: og-settle 560ms ease-in both; }
+.is-opening .og-wing { animation: none; transform: scaleY(.25); }
+.is-opening .og-sheet { animation: og-sheet-open 900ms cubic-bezier(.3, .7, .25, 1) 280ms both; }
+.is-opening .og-flap { animation: og-flap-open 460ms cubic-bezier(.5, 0, .3, 1) both; }
+.is-opening .og-creases { animation: og-fade-out 500ms ease 1300ms forwards; }
+.is-opening .og-face { animation: fade-in 450ms ease 1350ms both; }
+.is-opening .og-lift { animation: og-lift 900ms cubic-bezier(.25, .8, .25, 1) 1700ms forwards; }
+
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   .amb, .flyer, .flyer-bob, .orbit, .timer-urgent, .tick, .shake, .ok-bump, .rv-seal-ring, .carousel.nudge > .slide { animation: none !important; }

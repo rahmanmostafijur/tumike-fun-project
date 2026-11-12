@@ -27,8 +27,42 @@ export const QUICK_PATTERN: readonly QuestionKind[] = [
   'knowledge', 'knowledge', 'scenario',
 ]
 
-/** Full journey: per stage, 2 knowledge + 1 scenario. */
-export const FULL_STAGE_PATTERN: readonly QuestionKind[] = ['knowledge', 'knowledge', 'scenario']
+/** Full journey rhythm: two knowledge questions, then a scenario, repeated. */
+export const FULL_RHYTHM: readonly QuestionKind[] = ['knowledge', 'knowledge', 'scenario']
+/** Questions per stage when a pack does not set its own journey length. */
+export const DEFAULT_PER_STAGE = 3
+
+export interface PlannedSlot {
+  kind: QuestionKind
+  /** 0-based stage the question is asked in. */
+  stageIndex: number
+}
+
+/** Full journey length: the pack's own `fullLength`, or three per stage. */
+export function fullLength(pack: Pick<Pack, 'stages' | 'fullLength'>): number {
+  return pack.fullLength ?? pack.stages.length * DEFAULT_PER_STAGE
+}
+
+/**
+ * The full journey's slots: `length` questions in the K K S rhythm, spread
+ * evenly over the stages from first to last. 21 over 7 stages is exactly
+ * three each; 21 over 5 stages is 5, 4, 4, 4, 4.
+ */
+export function fullJourneyPlan(stageCount: number, length = stageCount * DEFAULT_PER_STAGE): PlannedSlot[] {
+  const stages = Math.max(1, stageCount)
+  return Array.from({ length }, (_, position) => ({
+    kind: FULL_RHYTHM[position % FULL_RHYTHM.length] ?? 'knowledge',
+    stageIndex: Math.min(stages - 1, Math.floor((position * stages) / length)),
+  }))
+}
+
+/** How many questions of each kind a list of kinds needs. */
+export function countKinds(kinds: readonly QuestionKind[]): Record<QuestionKind, number> {
+  return {
+    knowledge: kinds.filter((k) => k === 'knowledge').length,
+    scenario: kinds.filter((k) => k === 'scenario').length,
+  }
+}
 
 /** Stage index for a question position, spreading `total` questions over `stageCount` stages. */
 export function stageForPosition(position: number, total: number, stageCount: number): number {
@@ -87,9 +121,7 @@ export function buildQuiz(pack: Pack, mode: Mode, rng: Rng): Quiz {
       take(kind, target, stageIndex)
     })
   } else {
-    for (let stageIndex = 0; stageIndex < stageCount; stageIndex++) {
-      FULL_STAGE_PATTERN.forEach((kind) => take(kind, stageIndex + 1, stageIndex))
-    }
+    fullJourneyPlan(stageCount, fullLength(pack)).forEach(({ kind, stageIndex }) => take(kind, stageIndex + 1, stageIndex))
   }
 
   return { mode, items, retired: [] }

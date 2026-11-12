@@ -1,6 +1,6 @@
 import { useId, type CSSProperties } from 'react'
 import { isPlayable, type AnyPack } from '../../engine/schema'
-import { QUICK_PATTERN } from '../../engine/selection'
+import { QUICK_PATTERN, fullLength } from '../../engine/selection'
 import { useI18n } from '../../i18n/I18n'
 import { APP } from '../../config'
 import { IconButton, PrimaryButton, SecondaryButton } from '../components/Button'
@@ -30,7 +30,7 @@ export function Landing({ packs, selected, onSelect, name, onNameChange, onStart
   const nameId = useId()
   useSceneryView('landing')
   const playable = isPlayable(selected)
-  const fullCount = playable ? selected.stages.length * 3 : FULL_FALLBACK
+  const fullCount = playable ? fullLength(selected) : FULL_FALLBACK
   // With a painting, the headline starts below the skyline at the top.
   const headlineTop = selected.background ? 'mt-[clamp(96px,calc(27vh-50px),196px)]' : 'mt-[clamp(20px,6vh,72px)]'
 

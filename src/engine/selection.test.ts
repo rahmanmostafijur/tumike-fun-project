@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest'
-import { buildQuiz, quickDifficulties, stageForPosition, swapQuestion } from './selection'
+import { buildQuiz, countKinds, fullJourneyPlan, fullLength, quickDifficulties, stageForPosition, swapQuestion } from './selection'
+import { PackSchema, type Pack } from './schema'
 import { createRng } from './rng'
 import { makeFixturePack } from './fixture.test-helper'
 
@@ -58,6 +59,59 @@ describe('buildQuiz', () => {
     const a = buildQuiz(pack, 'quick', createRng(7))
     const b = buildQuiz(pack, 'quick', createRng(7))
     expect(a).toEqual(b)
+  })
+})
+
+describe('configurable stage count', () => {
+  const perStage = (stageCount: number, length?: number) => {
+    const counts = Array.from({ length: stageCount }, () => 0)
+    fullJourneyPlan(stageCount, length).forEach((s) => counts[s.stageIndex]!++)
+    return counts
+  }
+
+  test('7 stages x 21 questions is exactly the old shape: K K S in every stage', () => {
+    const plan = fullJourneyPlan(7, 21)
+    expect(perStage(7, 21)).toEqual([3, 3, 3, 3, 3, 3, 3])
+    plan.forEach((slot, i) => {
+      expect(slot.stageIndex).toBe(Math.floor(i / 3))
+      expect(slot.kind).toBe(i % 3 === 2 ? 'scenario' : 'knowledge')
+    })
+  })
+
+  test('5 stages x 21 questions spreads 5, 4, 4, 4, 4 and keeps the 2:1 rhythm', () => {
+    const plan = fullJourneyPlan(5, 21)
+    expect(perStage(5, 21)).toEqual([5, 4, 4, 4, 4])
+    expect(countKinds(plan.map((s) => s.kind))).toEqual({ knowledge: 14, scenario: 7 })
+    plan.slice(1).forEach((s, i) => expect(s.stageIndex).toBeGreaterThanOrEqual(plan[i]?.stageIndex ?? 0))
+  })
+
+  test('without a pack length it falls back to three per stage', () => {
+    expect(fullJourneyPlan(3)).toHaveLength(9)
+    expect(fullLength({ stages: makeFixturePack(4).stages })).toBe(12)
+    expect(fullLength({ stages: makeFixturePack(5).stages, fullLength: 21 })).toBe(21)
+  })
+
+  test('buildQuiz follows the pack length and stage count', () => {
+    const pack: Pack = { ...makeFixturePack(5), fullLength: 21 }
+    const full = buildQuiz(pack, 'full', createRng(9))
+    expect(full.items).toHaveLength(21)
+    expect(full.items.map((i) => i.stageIndex)).toEqual(fullJourneyPlan(5, 21).map((s) => s.stageIndex))
+    full.items.forEach((item) => {
+      if (item.kind !== 'knowledge') return
+      expect(pack.knowledge.find((q) => q.id === item.questionId)?.stage).toBe(item.stageIndex + 1)
+    })
+    const quick = buildQuiz(pack, 'quick', createRng(9))
+    expect(quick.items).toHaveLength(9)
+    expect(quick.items[0]?.stageIndex).toBe(0)
+    expect(quick.items[8]?.stageIndex).toBe(4)
+  })
+
+  test('the schema rejects a pack with too few questions for its journey', () => {
+    const small = makeFixturePack(3) // 15 knowledge, 6 scenarios
+    expect(PackSchema.safeParse(small).success).toBe(true)
+    const result = PackSchema.safeParse({ ...small, fullLength: 21 }) // needs 15 knowledge and 8 scenarios
+    expect(result.success).toBe(false)
+    expect(result.error?.issues.map((i) => i.message)).toContain('need at least 8 scenario questions')
   })
 })
 

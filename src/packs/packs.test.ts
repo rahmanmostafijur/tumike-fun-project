@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import { allPacks, getAnyPack, getPack, listedPacks, packErrors, packs } from './index'
-import { buildQuiz } from '../engine/selection'
+import { buildQuiz, fullLength } from '../engine/selection'
 import { createRng } from '../engine/rng'
 
 describe('pack registry', () => {
@@ -9,9 +9,10 @@ describe('pack registry', () => {
     expect(packs.length).toBeGreaterThanOrEqual(2)
   })
 
-  test('carousel order: Harry Potter first, then five coming-soon packs', () => {
+  test('carousel order: Harry Potter first; Money Heist playable in its place among four coming-soon packs', () => {
     expect(listedPacks.map((p) => p.id)).toEqual(['harry-potter', 'tin-goyenda', 'himu-misir-ali', 'breaking-bad', 'money-heist', 'game-of-thrones'])
-    expect(listedPacks.filter((p) => p.status === 'coming-soon')).toHaveLength(5)
+    expect(listedPacks.filter((p) => p.status === 'coming-soon').map((p) => p.id)).toEqual(['tin-goyenda', 'himu-misir-ali', 'breaking-bad', 'game-of-thrones'])
+    expect(getPack('money-heist')).toBeDefined()
   })
 
   test('coming-soon packs can never start a game', () => {
@@ -60,8 +61,14 @@ describe('harry potter pack', () => {
     for (const pack of packs) {
       for (let seed = 1; seed <= 25; seed++) {
         expect(buildQuiz(pack, 'quick', createRng(seed)).items).toHaveLength(9)
-        expect(buildQuiz(pack, 'full', createRng(seed)).items).toHaveLength(pack.stages.length * 3)
+        expect(buildQuiz(pack, 'full', createRng(seed)).items).toHaveLength(fullLength(pack))
       }
     }
+  })
+
+  test('the full journey stays at 21 questions (3 per stage)', () => {
+    const quiz = hp && buildQuiz(hp, 'full', createRng(3))
+    expect(quiz?.items).toHaveLength(21)
+    quiz?.items.forEach((item, i) => expect(item.stageIndex).toBe(Math.floor(i / 3)))
   })
 })

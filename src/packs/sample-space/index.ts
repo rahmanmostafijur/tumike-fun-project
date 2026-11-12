@@ -62,6 +62,9 @@ export default definePack({
     ],
   },
   reveal: {
+    kind: 'letter',
+    hint: L('সিলে চাপ দিয়ে খামটা খোলো', 'Tap the seal to open it'),
+    tapLabel: L('খাম খোলো', 'Open the envelope'),
     lines: [L('সংকেত এসে পৌঁছেছে।', 'The signal has arrived.')],
     address: L('{name}\nপৃথিবী', '{name}\nEarth'),
     anonymous: L('পৃথিবীর বাসিন্দা', 'Earthling'),

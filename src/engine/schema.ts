@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { DEFAULT_PER_STAGE, QUICK_PATTERN, countKinds, fullJourneyPlan } from './selection'
 
 /**
  * Pack schema. A pack is plain data: everything a universe needs to run
@@ -166,16 +167,39 @@ export const FanSinceSchema = z.object({
 })
 export type FanSince = z.infer<typeof FanSinceSchema>
 
-export const RevealSchema = z.object({
-  /** One or two short lines shown while the letter arrives. */
+/** Copy every reveal sequence needs. */
+const RevealCopy = {
+  /** One or two short lines shown while the result arrives. */
   lines: z.array(LocalizedSchema).min(1).max(2),
+  /** Hint shown while the sequence waits for a tap. */
+  hint: LocalizedSchema,
+  /** Screen-reader label of the tap target. */
+  tapLabel: LocalizedSchema,
+}
+
+/** A letter delivered by the pack's flyer (or sliding in); tap the wax seal to open it. */
+export const LetterRevealSchema = z.object({
+  kind: z.literal('letter'),
+  ...RevealCopy,
   /** Address written on the envelope. `{name}` is replaced by the player's name. */
   address: LocalizedSchema,
   /** Used when the player left the name empty. */
   anonymous: LocalizedSchema,
   envelope: z.object({ paper: hex, flap: hex, ink: hex, seal: hex, sealInk: hex }),
 })
+
+/** A paper bird flies in; tap it and it unfolds into the card. */
+export const OrigamiRevealSchema = z.object({
+  kind: z.literal('origami'),
+  ...RevealCopy,
+  /** `front` is the bird's main colour, `back` the shaded side, `crease` the fold lines. */
+  paper: z.object({ front: hex, back: hex, crease: hex }),
+})
+
+export const RevealSchema = z.discriminatedUnion('kind', [LetterRevealSchema, OrigamiRevealSchema])
 export type Reveal = z.infer<typeof RevealSchema>
+export type LetterReveal = z.infer<typeof LetterRevealSchema>
+export type OrigamiReveal = z.infer<typeof OrigamiRevealSchema>
 
 export const PackSchema = z
   .object({
@@ -194,6 +218,8 @@ export const PackSchema = z
     theme: ThemeSchema,
     stageLabel: LocalizedSchema,
     stages: z.array(StageSchema).min(3).max(12),
+    /** Questions in the full journey. Defaults to three per stage. */
+    fullLength: z.number().int().min(6).max(30).optional(),
     /** Optional painted background. Without it the app uses the plain theme colour. */
     background: BackgroundSchema.optional(),
     lifelines: z.object({ fifty: LocalizedSchema, freeze: LocalizedSchema, swap: LocalizedSchema }),
@@ -268,8 +294,12 @@ export const PackSchema = z
     })
 
     // Enough questions for both modes, plus at least one spare for the swap lifeline.
-    const needKnowledge = Math.max(6, stageCount * 2) + 1
-    const needScenarios = Math.max(3, stageCount) + 1
+    const quick = countKinds(QUICK_PATTERN)
+    const length = pack.fullLength ?? stageCount * DEFAULT_PER_STAGE
+    if (length < stageCount) issue('fullLength must give every stage at least one question', ['fullLength'])
+    const full = countKinds(fullJourneyPlan(stageCount, length).map((s) => s.kind))
+    const needKnowledge = Math.max(quick.knowledge, full.knowledge) + 1
+    const needScenarios = Math.max(quick.scenario, full.scenario) + 1
     if (pack.knowledge.length < needKnowledge) {
       issue(`need at least ${needKnowledge} knowledge questions`, ['knowledge'])
     }

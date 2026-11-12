@@ -41,8 +41,6 @@ export const strings = {
   'q.quit': { bn: 'বেরিয়ে যাও', en: 'Leave' },
 
   'reveal.skip': { bn: 'সরাসরি দেখো', en: 'Skip' },
-  'reveal.open': { bn: 'সিলে চাপ দিয়ে চিঠিটা খোলো', en: 'Tap the seal to open your letter' },
-  'reveal.openLabel': { bn: 'চিঠি খোলো', en: 'Open the letter' },
   'reveal.label': { bn: 'তোমার ফলাফল আসছে', en: 'Your result is arriving' },
 
   'result.youAre': { bn: '{name}, তুমি হলে', en: '{name}, you are' },

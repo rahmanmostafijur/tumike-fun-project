@@ -23,8 +23,9 @@ type Screen =
   | { name: 'landing' }
   | { name: 'fanSince'; mode: Mode }
   | { name: 'quiz'; mode: Mode; seed: number; fanSinceId: string | null }
-  | { name: 'reveal'; result: QuizResult; fanSinceId: string | null; isNew: boolean }
-  | { name: 'result'; result: QuizResult; fanSinceId: string | null; isNew: boolean }
+  // `mode` is the mode just played, so "Play again" repeats it.
+  | { name: 'reveal'; mode: Mode; result: QuizResult; fanSinceId: string | null; isNew: boolean }
+  | { name: 'result'; mode: Mode; result: QuizResult; fanSinceId: string | null; isNew: boolean }
   | { name: 'collection'; back: Screen }
 
 /** Deep link (?pack= or #id) first, then the last viewed pack, then the default. */
@@ -46,7 +47,8 @@ function previewScreen(): Screen | null {
     characterId: c.id, tier: c.tier ?? 'legend', trait: c.trait ?? pack.traits[0]?.id ?? '', rarity: rarityOf(c),
     knowledgePercent: 80, correct: 5, knowledgeTotal: 6, matchPercent: 87, dark: c.kind === 'dark', secret: c.kind === 'secret',
   }
-  return { name: params.get('reveal') ? 'reveal' : 'result', result, fanSinceId: pack.fanSince.options[0]?.id ?? null, isNew: true }
+  const mode: Mode = params.get('mode') === 'full' ? 'full' : 'quick'
+  return { name: params.get('reveal') ? 'reveal' : 'result', mode, result, fanSinceId: pack.fanSince.options[0]?.id ?? null, isNew: true }
 }
 
 export function App() {
@@ -103,14 +105,14 @@ export function App() {
   }, [selectPack])
 
   const finishQuiz = useCallback(
-    (result: QuizResult, fanSinceId: string | null) => {
+    (result: QuizResult, fanSinceId: string | null, mode: Mode) => {
       if (!pack) return
       // In-memory state is the source of truth, so the collection still works
       // for this session when localStorage is blocked.
       const isNew = !unlocked.includes(result.characterId)
       addToCollection(pack.id, result.characterId)
       if (isNew) setUnlocked([...unlocked, result.characterId])
-      setScreen({ name: 'reveal', result, fanSinceId, isNew })
+      setScreen({ name: 'reveal', mode, result, fanSinceId, isNew })
     },
     [pack, unlocked],
   )
@@ -157,7 +159,7 @@ export function App() {
             mode={screen.mode}
             seed={screen.seed}
             onQuit={home}
-            onFinish={(result) => finishQuiz(result, screen.fanSinceId)}
+            onFinish={(result) => finishQuiz(result, screen.fanSinceId, screen.mode)}
           />
         )
       case 'reveal': {
@@ -186,7 +188,7 @@ export function App() {
             unlocked={unlocked.length}
             isNew={screen.isNew}
             onHome={home}
-            onPlayAgain={() => setScreen({ name: 'fanSince', mode: screen.result.secret ? 'full' : 'quick' })}
+            onPlayAgain={() => setScreen({ name: 'fanSince', mode: screen.mode })}
             onCollection={() => setScreen({ name: 'collection', back: { ...screen, isNew: false } })}
           />
         )

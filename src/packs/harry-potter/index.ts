@@ -116,6 +116,9 @@ export default definePack({
     ],
   },
   reveal: {
+    kind: 'letter',
+    hint: { bn: 'সিলে চাপ দিয়ে চিঠিটা খোলো', en: 'Tap the seal to open your letter' },
+    tapLabel: { bn: 'চিঠি খোলো', en: 'Open the letter' },
     lines: [
       { bn: 'চিঠিটা একটু দেরিতে এল।', en: 'Your letter arrived a little late.' },
       { bn: 'কিন্তু এসেছে।', en: 'But it came.' },
