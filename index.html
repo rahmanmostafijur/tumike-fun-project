@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="bn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0E1424" />
+    <meta name="color-scheme" content="dark" />
+    <title>তুমি কে? · Tumi Ke?</title>
+    <meta name="description" content="কোন দুনিয়ায় তুমি কে? ৯টা প্রশ্ন, ৯০ সেকেন্ড। ছোটবেলার প্রিয় গল্পে তুমি কোন চরিত্র, খুঁজে বের করো।" />
+    <meta property="og:title" content="তুমি কে? · Tumi Ke?" />
+    <meta property="og:description" content="ছোটবেলার প্রিয় গল্পে তুমি কোন চরিত্র? ৯টা প্রশ্ন, ৯০ সেকেন্ড।" />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@700&family=Cormorant+Garamond:wght@700&family=Hind+Siliguri:wght@400;500;600&display=swap"
+    />
+    <style>
+      html, body { margin: 0; background: #0E1424; }
+      #splash {
+        position: fixed; inset: 0; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: 18px;
+        color: #E0B45C; font: 700 28px "Anek Bangla", system-ui, sans-serif;
+      }
+      #splash i {
+        width: 6px; height: 6px; border-radius: 50%; background: #E0B45C;
+        animation: splash-pulse 1.2s ease-in-out infinite;
+      }
+      @keyframes splash-pulse { 0%, 100% { opacity: .25; transform: scale(.8); } 50% { opacity: 1; transform: scale(1.2); } }
+      @media (prefers-reduced-motion: reduce) { #splash i { animation: none; opacity: .6; } }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div id="splash" role="status" aria-label="লোড হচ্ছে">
+        <span>তুমি কে?</span>
+        <i></i>
+      </div>
+    </div>
+    <noscript>
+      <p style="color:#F2E9D8;font-family:sans-serif;text-align:center;padding:40px 24px">
+        এই কুইজ খেলতে JavaScript চালু করতে হবে। Please enable JavaScript to play.
+      </p>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

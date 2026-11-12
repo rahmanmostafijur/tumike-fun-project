@@ -1,0 +1,368 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-bg: var(--t-bg);
+  --color-surface: var(--t-surface);
+  --color-line: var(--t-line);
+  --color-accent: var(--t-accent);
+  --color-ink: var(--t-text);
+  --color-muted: var(--t-muted);
+  --color-disabled: var(--t-disabled);
+  --color-on-accent: var(--t-on-accent);
+  --color-success: var(--t-success);
+  --color-danger: var(--t-danger);
+  --color-dark: var(--t-dark);
+  --font-display: "Anek Bangla", "Hind Siliguri", system-ui, sans-serif;
+  --font-body: "Hind Siliguri", system-ui, sans-serif;
+  --font-latin: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+}
+
+/* Theme tokens are registered colours so a pack switch can transition them together. */
+@property --t-bg { syntax: '<color>'; inherits: true; initial-value: #0E1424; }
+@property --t-surface { syntax: '<color>'; inherits: true; initial-value: #182036; }
+@property --t-line { syntax: '<color>'; inherits: true; initial-value: #2B3554; }
+@property --t-accent { syntax: '<color>'; inherits: true; initial-value: #E0B45C; }
+@property --t-text { syntax: '<color>'; inherits: true; initial-value: #F2E9D8; }
+@property --t-muted { syntax: '<color>'; inherits: true; initial-value: #A9B1C6; }
+@property --t-disabled { syntax: '<color>'; inherits: true; initial-value: #8690AB; }
+@property --t-on-accent { syntax: '<color>'; inherits: true; initial-value: #0E1424; }
+@property --t-success { syntax: '<color>'; inherits: true; initial-value: #7CC49A; }
+@property --t-danger { syntax: '<color>'; inherits: true; initial-value: #E58A80; }
+@property --t-dark { syntax: '<color>'; inherits: true; initial-value: #C9707A; }
+
+/* Defaults match the Harry Potter pack so the first paint is on-theme. */
+:root {
+  --t-bg: #0E1424;
+  --t-surface: #182036;
+  --t-line: #2B3554;
+  --t-accent: #E0B45C;
+  --t-text: #F2E9D8;
+  --t-muted: #A9B1C6;
+  --t-disabled: #8690AB;
+  --t-on-accent: #0E1424;
+  --t-success: #7CC49A;
+  --t-danger: #E58A80;
+  --t-dark: #C9707A;
+  color-scheme: dark;
+  transition: --t-bg .4s ease, --t-surface .4s ease, --t-line .4s ease, --t-accent .4s ease, --t-text .4s ease,
+    --t-muted .4s ease, --t-disabled .4s ease, --t-on-accent .4s ease;
+}
+
+html, body, #root { min-height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--t-bg);
+  color: var(--t-text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  text-rendering: optimizeLegibility;
+}
+
+button { cursor: pointer; }
+button:disabled { cursor: default; }
+:focus-visible { outline: 2px solid var(--t-accent); outline-offset: 3px; border-radius: 14px; }
+::selection { background: var(--t-accent); color: var(--t-on-accent); }
+
+/* The app column: phone-shaped, centred on desktop with hairline edges. */
+.app-frame {
+  position: relative;
+  min-height: 100dvh;
+  max-width: 480px;
+  margin: 0 auto;
+  overflow-x: hidden;
+}
+@media (min-width: 560px) {
+  .app-frame { border-inline: 1px solid var(--t-line); }
+}
+
+.screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding: 16px 24px max(24px, env(safe-area-inset-bottom));
+}
+
+/* Tap feedback: transform only. */
+.press { transition: transform 120ms ease, background-color 160ms ease, border-color 160ms ease, opacity 200ms ease; }
+.press:active:not(:disabled) { transform: scale(0.975); }
+
+.spaced { letter-spacing: 0.24em; text-transform: uppercase; }
+.font-latin { font-variant-numeric: lining-nums; }
+/* Question screen: keep the top of the painting clear; the question starts on the dark fade. */
+.q-window { height: calc(36dvh - 82px); flex-shrink: 0; }
+
+/* Compact rhythm for very short phones. */
+@media (max-height: 700px) {
+  .screen { padding-top: 12px; }
+  .q-window { height: calc(35dvh - 74px); }
+  .q-body { padding-block: 6px; }
+  .q-options { gap: 8px; }
+  .q-options > button { min-height: 52px; }
+}
+
+/* ---------- Landing carousel ---------- */
+.carousel {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  margin-inline: -24px;
+  padding: 8px 11% 4px;
+  outline: none;
+}
+.carousel::-webkit-scrollbar { display: none; }
+.carousel:focus-visible { outline: 2px solid var(--t-accent); outline-offset: -2px; border-radius: 16px; }
+/* The row has 11% side padding, so 100% of its content box is 78% of the screen. */
+.slide { flex: 0 0 100%; scroll-snap-align: center; scroll-snap-stop: always; }
+.slide-card { min-height: 116px; transform: scale(.93); opacity: .7; transition: transform 300ms ease, opacity 300ms ease; }
+.slide.is-active .slide-card { transform: none; opacity: 1; }
+.carousel.nudge > .slide { animation: nudge 1100ms ease-in-out 1; }
+@keyframes nudge { 0%, 100% { transform: none; } 40% { transform: translateX(-24px); } }
+.desk-only { display: none; }
+@media (hover: hover) and (pointer: fine) { .desk-only { display: grid; } }
+.landing-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-inline: -24px;
+  padding: 18px 24px max(24px, env(safe-area-inset-bottom));
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--t-bg) 0%, transparent), var(--t-bg) 22px);
+}
+
+/* Result card: the pack's painting as a band across the top, fading into the surface. */
+.card-band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  border-radius: 22px 22px 0 0;
+  background-size: cover;
+  opacity: .85;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, #000 42%, transparent);
+  mask-image: linear-gradient(to bottom, #000 42%, transparent);
+}
+
+/* ---------- Entrances ---------- */
+@keyframes rise-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.screen-enter { animation: rise-in 420ms cubic-bezier(.2, .7, .2, 1) both; }
+.stagger > * { animation: rise-in 460ms cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(var(--i, 0) * 50ms); }
+.fade-in { animation: fade-in 300ms ease both; }
+
+/* ---------- Painted background (shared scenery layer) ---------- */
+.scenery {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  max-width: 480px;
+  height: 100lvh;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--t-bg);
+  contain: strict;
+}
+.scenery-layer { position: absolute; inset: 0; transition: opacity 400ms ease; }
+.scenery-layer.is-paused * { animation-play-state: paused !important; }
+.scenery-box { position: absolute; left: 0; top: 0; transition: transform 1.6s cubic-bezier(.45, 0, .2, 1); will-change: transform; }
+.scenery-img { display: block; width: 100%; height: 100%; object-fit: cover; user-select: none; }
+.scenery-fade { position: absolute; inset: 0; transition: opacity 900ms ease; }
+/* Landing: painting clear at the top, navy over roughly the lower 55%. */
+.fade-landing {
+  background: linear-gradient(to bottom,
+    color-mix(in srgb, var(--t-bg) 38%, transparent) 0%,
+    color-mix(in srgb, var(--t-bg) 0%, transparent) 13%,
+    color-mix(in srgb, var(--t-bg) 14%, transparent) 22%,
+    color-mix(in srgb, var(--t-bg) 66%, transparent) 31%,
+    color-mix(in srgb, var(--t-bg) 90%, transparent) 38%,
+    color-mix(in srgb, var(--t-bg) 97%, transparent) 46%,
+    var(--t-bg) 56%);
+}
+/* Question: the top 30% is a window onto the painting, then a strong navy fade. */
+.fade-journey {
+  background: linear-gradient(to bottom,
+    color-mix(in srgb, var(--t-bg) 35%, transparent) 0%,
+    color-mix(in srgb, var(--t-bg) 0%, transparent) 11%,
+    color-mix(in srgb, var(--t-bg) 8%, transparent) 21%,
+    color-mix(in srgb, var(--t-bg) 72%, transparent) 28%,
+    color-mix(in srgb, var(--t-bg) 96%, transparent) 34%,
+    var(--t-bg) 48%);
+}
+.fade-reveal {
+  background: linear-gradient(to bottom,
+    color-mix(in srgb, var(--t-bg) 48%, transparent) 0%,
+    color-mix(in srgb, var(--t-bg) 62%, transparent) 30%,
+    color-mix(in srgb, var(--t-bg) 74%, transparent) 55%,
+    color-mix(in srgb, var(--t-bg) 84%, transparent) 75%,
+    color-mix(in srgb, var(--t-bg) 92%, transparent) 100%);
+}
+/* Result and collection: painting heavily darkened so the card is the hero. */
+.fade-dim {
+  background: linear-gradient(to bottom,
+    color-mix(in srgb, var(--t-bg) 80%, transparent),
+    color-mix(in srgb, var(--t-bg) 91%, transparent));
+}
+
+/* Ambient effects, positioned in percent of the image box. */
+.amb { position: absolute; }
+.amb-glow {
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--glow), transparent);
+  opacity: var(--glow-a);
+  animation: amb-glow 9s ease-in-out infinite;
+}
+@keyframes amb-glow { 0%, 100% { opacity: calc(var(--glow-a) * .5); } 50% { opacity: var(--glow-a); } }
+.amb-glow.is-flicker { animation: amb-glow-flicker 2.8s steps(1, end) infinite; }
+@keyframes amb-glow-flicker {
+  0% { opacity: var(--glow-a); } 9% { opacity: calc(var(--glow-a) * .6); } 13% { opacity: calc(var(--glow-a) * .95); }
+  41% { opacity: calc(var(--glow-a) * .78); } 47% { opacity: calc(var(--glow-a) * .5); } 53% { opacity: var(--glow-a); }
+  79% { opacity: calc(var(--glow-a) * .85); } 100% { opacity: var(--glow-a); }
+}
+.amb-snow { border-radius: 50%; background: #F4F8FF; opacity: .75; animation: amb-snow linear infinite; }
+@keyframes amb-snow { from { transform: translate3d(0, calc(var(--fall) * -0.05), 0); } to { transform: translate3d(var(--drift), var(--fall), 0); } }
+.amb-leaf { width: 8px; height: 4px; border-radius: 60% 0; background: #C9A35E; opacity: 0; animation: amb-leaf linear infinite; }
+@keyframes amb-leaf {
+  0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(0deg); }
+  12% { opacity: .8; }
+  85% { opacity: .7; }
+  100% { opacity: 0; transform: translate3d(var(--dx), var(--dy), 0) rotate(560deg); }
+}
+.amb-smoke {
+  width: 70%; height: 5%; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 225, 225, .11), rgba(255, 225, 225, 0));
+  animation: amb-smoke ease-in-out infinite alternate;
+}
+@keyframes amb-smoke { from { transform: translate3d(0, 0, 0); opacity: .5; } to { transform: translate3d(var(--dx), -8px, 0); opacity: 1; } }
+.amb-star {
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #FFF8E6;
+  box-shadow: 0 0 6px 1px rgba(255, 248, 230, .55);
+  opacity: .8;
+  animation: amb-twinkle 3.6s ease-in-out infinite;
+}
+@keyframes amb-twinkle { 0%, 100% { opacity: .2; } 50% { opacity: 1; } }
+.amb-steam-src { position: absolute; width: 7%; aspect-ratio: 1; transform: translate(-50%, -50%); }
+.amb-puff {
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(228, 230, 238, .5), rgba(228, 230, 238, 0));
+  opacity: 0;
+  animation: amb-puff 5.8s linear infinite;
+}
+@keyframes amb-puff {
+  0% { opacity: 0; transform: translate(0, 0) scale(.35); }
+  12% { opacity: .9; }
+  100% { opacity: 0; transform: translate(150%, -190%) scale(2.6); }
+}
+
+/* The flyer: one pass across the sky with a gentle bob and tilt. */
+.flyer { position: absolute; left: 0; animation-name: flyer-pass; animation-timing-function: linear; animation-fill-mode: both; will-change: transform; }
+@keyframes flyer-pass { from { transform: translate3d(var(--from), 0, 0); } to { transform: translate3d(var(--to), 0, 0); } }
+.flyer-bob { animation: flyer-bob 3.4s ease-in-out infinite; }
+@keyframes flyer-bob { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-9px) rotate(2.5deg); } }
+.flyer img { display: block; width: 100%; height: auto; }
+
+/* Hidden tab: pause everything. Reduced motion: fully static. */
+.anim-paused *, .anim-paused *::before, .anim-paused *::after { animation-play-state: paused !important; }
+.is-static .amb { animation: none !important; }
+.is-static .amb-steam-src, .is-static .amb-snow, .is-static .amb-leaf, .is-static .amb-smoke { display: none; }
+.is-static .scenery-box { transition: none; }
+
+/* ---------- Question feedback ---------- */
+@keyframes shake { 0%, 100% { transform: none; } 20% { transform: translateX(-7px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(2px); } }
+@keyframes pop { 0% { transform: scale(.4); opacity: 0; } 70% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(1); } }
+@keyframes glow-ok { 0% { transform: scale(1); } 40% { transform: scale(1.02); } 100% { transform: scale(1); } }
+.shake { animation: shake 420ms ease; }
+.pop { animation: pop 320ms cubic-bezier(.2, .9, .3, 1.4) both; }
+.ok-bump { animation: glow-ok 420ms ease; }
+
+@keyframes ring-deplete { from { stroke-dashoffset: 0; } to { stroke-dashoffset: var(--ring-c); } }
+.ring-progress { animation-name: ring-deplete; animation-timing-function: linear; animation-fill-mode: forwards; }
+@keyframes tick { 0% { transform: scale(1.35); } 100% { transform: scale(1); } }
+.tick { display: inline-block; animation: tick 380ms cubic-bezier(.2, .9, .3, 1.3); }
+@keyframes urgent-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+.timer-urgent { animation: urgent-pulse 1s ease-in-out infinite; }
+
+/* ---------- Cards ---------- */
+@keyframes orbit { to { transform: rotate(360deg); } }
+.orbit { animation: orbit 24s linear infinite; transform-origin: 50% 50%; }
+@keyframes card-in { from { opacity: 0; transform: translateY(18px) scale(.96); } to { opacity: 1; transform: none; } }
+.card-in { animation: card-in 600ms cubic-bezier(.2, .7, .2, 1) both; }
+
+/* ---------- Reveal: the letter ---------- */
+.rv-stage { perspective: 900px; }
+@keyframes rv-envelope-in { 0% { opacity: 0; transform: translateY(70vh) rotate(-8deg); } 70% { opacity: 1; transform: translateY(-8px) rotate(1deg); } 100% { transform: none; } }
+@keyframes rv-envelope-drop {
+  0% { opacity: 0; transform: translateY(var(--drop-y)) scale(.12) rotate(-10deg); }
+  6% { opacity: 1; }
+  70% { transform: translateY(8px) scale(1.02) rotate(2deg); }
+  86% { transform: translateY(-3px) scale(1) rotate(-1deg); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes rv-envelope-out { to { opacity: 0; transform: translateY(46px) scale(.96); } }
+@keyframes rv-owl-swoop {
+  0% { opacity: 0; transform: translate(-75vw, -30vh) rotate(14deg) scale(.75); }
+  10% { opacity: 1; }
+  43% { transform: translate(0, 0) rotate(-2deg) scale(1); }
+  100% { opacity: 1; transform: translate(80vw, -44vh) rotate(-20deg) scale(.7); }
+}
+@keyframes rv-seal-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+@keyframes rv-ring { 0% { transform: scale(.8); opacity: .9; } 100% { transform: scale(1.55); opacity: 0; } }
+@keyframes rv-seal-wobble { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-7deg) scale(1.04); } 60% { transform: rotate(6deg) scale(1.04); } }
+@keyframes rv-crack { from { opacity: 0; } to { opacity: 1; } }
+@keyframes rv-half-l { to { opacity: 0; transform: translate(-34px, 60px) rotate(-38deg); } }
+@keyframes rv-half-r { to { opacity: 0; transform: translate(34px, 70px) rotate(42deg); } }
+@keyframes rv-flap-open { 0% { transform: rotateX(0); } 100% { transform: rotateX(180deg); } }
+@keyframes rv-flap-back { to { z-index: 1; } }
+@keyframes rv-card-rise { 0% { transform: translateY(0); } 70% { transform: translateY(-150px); } 100% { transform: translateY(-138px) scale(1.04); } }
+@keyframes rv-line { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes rv-dust { 0% { opacity: 0; transform: translate(0, 0) scale(.5); } 30% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1); } }
+
+/* 1. Delivery (on mount). */
+.rv-envelope { animation: rv-envelope-in 700ms cubic-bezier(.2, .8, .25, 1) both; }
+.has-flyer .rv-envelope { animation: rv-envelope-drop 700ms cubic-bezier(.35, .1, .3, 1) 560ms both; }
+.rv-owl { position: absolute; animation: rv-owl-swoop 1350ms cubic-bezier(.4, .05, .45, 1) both; will-change: transform; pointer-events: none; }
+.rv-line-1 { animation: rv-line 500ms ease 250ms both; }
+
+/* 2. Waiting: the seal pulses until it is tapped. */
+.is-waiting .rv-seal { animation: rv-seal-pulse 1.6s ease-in-out infinite; }
+.rv-seal-ring { border: 2px solid; animation: rv-ring 1.6s ease-out infinite; }
+.rv-hint { transition: opacity 300ms ease; }
+
+/* 3. Opening: the seal breaks, the flap opens, the card rises slowly. */
+.rv-line-2, .rv-crack, .rv-half, .rv-dust { opacity: 0; }
+.rv-flap { transform-origin: 50% 0; z-index: 4; }
+.is-opening .rv-seal { animation: rv-seal-wobble 260ms ease-in-out both; }
+.is-opening .rv-crack { animation: rv-crack 120ms ease 180ms forwards; }
+.is-opening .rv-seal-whole { animation: fade-in 1ms linear 320ms reverse both; }
+.is-opening .rv-half-l { animation: fade-in 1ms linear 320ms forwards, rv-half-l 560ms cubic-bezier(.4, 0, .8, .6) 330ms forwards; }
+.is-opening .rv-half-r { animation: fade-in 1ms linear 320ms forwards, rv-half-r 560ms cubic-bezier(.4, 0, .8, .6) 330ms forwards; }
+.is-opening .rv-dust { animation: rv-dust 900ms ease-out forwards; }
+.is-opening .rv-flap { animation: rv-flap-open 520ms cubic-bezier(.5, 0, .3, 1) 480ms forwards, rv-flap-back 1ms linear 740ms forwards; }
+.is-opening .rv-card { animation: rv-card-rise 1500ms cubic-bezier(.25, .8, .25, 1) 900ms both; }
+.is-opening .rv-line-2 { animation: rv-line 500ms ease 1100ms both; }
+.is-opening .rv-exit { animation: rv-envelope-out 380ms ease-in 2900ms forwards; }
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .amb, .flyer, .flyer-bob, .orbit, .timer-urgent, .tick, .shake, .ok-bump, .rv-seal-ring, .carousel.nudge > .slide { animation: none !important; }
+  .amb-snow, .amb-leaf, .amb-smoke { display: none; }
+  .slide-card { transition: none; }
+  :root { transition: none; }
+  .amb-steam-src, .flyer { display: none; }
+  .scenery-box, .scenery-fade { transition: none !important; }
+  .screen-enter, .stagger > *, .card-in, .pop { animation-duration: 1ms !important; animation-delay: 0ms !important; }
+  .press:active:not(:disabled) { transform: none; }
+}
