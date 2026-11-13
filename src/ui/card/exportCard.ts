@@ -3,6 +3,8 @@ import { completeTheme } from '../util'
 import { ICON_PATHS } from '../components/Icon'
 import { hasBengali } from '../util'
 import { BAND_H, isRare, type CardData } from './cardData'
+import { PHOTO_R, ringMarks } from '../photo/ring'
+import type { CardPhoto } from '../photo/render'
 
 type FullTheme = Required<Theme>
 
@@ -204,7 +206,7 @@ function drawMonogram(ctx: Ctx, card: CardData, theme: FullTheme, cx: number, cy
   const color = card.rarity === 'dark' ? theme.dark : theme.accent
   const r = 48
   ctx.save()
-  if (filled) {
+  if (filled && !card.photo) {
     ctx.globalAlpha = 0.84
     ctx.fillStyle = theme.surface
     ctx.beginPath()
@@ -212,6 +214,7 @@ function drawMonogram(ctx: Ctx, card: CardData, theme: FullTheme, cx: number, cy
     ctx.fill()
     ctx.globalAlpha = 1
   }
+  if (card.photo) drawPhoto(ctx, card.photo, color, cx, cy)
   ctx.strokeStyle = color
   ctx.lineWidth = 1.5
   if (card.rarity === 'dark') ctx.setLineDash([5, 4])
@@ -219,7 +222,7 @@ function drawMonogram(ctx: Ctx, card: CardData, theme: FullTheme, cx: number, cy
   ctx.arc(cx, cy, r, 0, Math.PI * 2)
   ctx.stroke()
   ctx.setLineDash([])
-  if (card.rarity !== 'beginner') {
+  if (card.rarity !== 'beginner' && !card.photo) {
     ctx.globalAlpha = 0.6
     ctx.lineWidth = 0.75
     ctx.beginPath()
@@ -250,13 +253,44 @@ function drawMonogram(ctx: Ctx, card: CardData, theme: FullTheme, cx: number, cy
     ctx.arc(cx, cy - r - 12, 2.5, 0, Math.PI * 2)
     ctx.fill()
   }
-  const latin = !hasBengali(card.monogram)
-  const size = card.monogram.length > 1 ? (latin ? 36 : 30) : latin ? 48 : 40
-  ctx.fillStyle = theme.text
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'middle'
-  ctx.font = `700 ${size}px ${latin ? F.latin : F.display}`
-  ctx.fillText(card.monogram, cx, cy + (latin ? 1 : size * 0.08))
+  if (!card.photo) {
+    const latin = !hasBengali(card.monogram)
+    const size = card.monogram.length > 1 ? (latin ? 36 : 30) : latin ? 48 : 40
+    ctx.fillStyle = theme.text
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.font = `700 ${size}px ${latin ? F.latin : F.display}`
+    ctx.fillText(card.monogram, cx, cy + (latin ? 1 : size * 0.08))
+  }
+  ctx.restore()
+}
+
+/** The player's photo, clipped to the same circle as on screen, with the pack's ring at its edge. */
+function drawPhoto(ctx: Ctx, photo: CardPhoto, color: string, cx: number, cy: number) {
+  ctx.save()
+  ctx.beginPath()
+  ctx.arc(cx, cy, PHOTO_R, 0, Math.PI * 2)
+  ctx.clip()
+  ctx.imageSmoothingQuality = 'high'
+  ctx.drawImage(photo.image, cx - PHOTO_R, cy - PHOTO_R, PHOTO_R * 2, PHOTO_R * 2)
+  ctx.restore()
+  ctx.save()
+  ctx.strokeStyle = color
+  for (const m of ringMarks(photo.ring)) {
+    ctx.globalAlpha = m.opacity
+    ctx.lineWidth = m.width
+    ctx.beginPath()
+    if (m.kind === 'circle') {
+      ctx.setLineDash(m.dash ? [...m.dash] : [])
+      ctx.lineCap = m.dash ? 'round' : 'butt'
+      ctx.arc(cx, cy, m.r, 0, Math.PI * 2)
+    } else {
+      ctx.setLineDash([])
+      ctx.moveTo(cx + Math.cos(m.angle) * m.r1, cy + Math.sin(m.angle) * m.r1)
+      ctx.lineTo(cx + Math.cos(m.angle) * m.r2, cy + Math.sin(m.angle) * m.r2)
+    }
+    ctx.stroke()
+  }
   ctx.restore()
 }
 

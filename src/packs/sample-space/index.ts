@@ -26,6 +26,8 @@ export default definePack({
   theme: {
     bg: '#0B1A1C', surface: '#12282B', line: '#24464A', accent: '#6FD1C4', text: '#E6F2EF',
     muted: '#9DB8B4', disabled: '#7E9C98', onAccent: '#0B1A1C', success: '#8FD18A', danger: '#E8907F', dark: '#C98AD6',
+    // Player photo: Teal over deep green.
+    photo: { shadow: '#0B1A1C', highlight: '#6FD1C4', strength: 0.3, ring: 'single' },
   },
   stageLabel: L('ধাপ', 'Stage'),
   stages: [

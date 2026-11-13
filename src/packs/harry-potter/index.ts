@@ -30,6 +30,8 @@ export default definePack({
     success: '#7CC49A',
     danger: '#E58A80',
     dark: '#C9707A',
+    // Player photo: Candle-lit gold over midnight blue, in a gilt double frame like a portrait on the castle stairs.
+    photo: { shadow: '#0E1424', highlight: '#E0B45C', strength: 0.3, ring: 'double' },
   },
   stageLabel: { bn: 'বর্ষ', en: 'Year' },
   stages: [

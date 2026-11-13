@@ -54,7 +54,10 @@ const kebab = (s: string) => s.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)
 /** Applies pack theme tokens as CSS variables (--t-bg, --t-accent, ...). */
 export function applyTheme(theme: Theme): void {
   const root = document.documentElement
-  for (const [key, value] of Object.entries(completeTheme(theme))) root.style.setProperty(`--t-${kebab(key)}`, value)
+  for (const [key, value] of Object.entries(completeTheme(theme))) {
+    // Colour tokens only; the photo treatment is read by the photo code directly.
+    if (typeof value === 'string') root.style.setProperty(`--t-${kebab(key)}`, value)
+  }
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme.bg)
 }
 

@@ -16,6 +16,8 @@ export default definePack({
   theme: {
     bg: '#101832', surface: '#1E263E', line: '#393F55', accent: '#F2C94C', onAccent: '#101832',
     text: '#F1EEE4', muted: '#B2B2B2', disabled: '#97989D',
+    // Player photo: Moonlight yellow over night blue, edged with a dotted ring like stars over old Dhaka.
+    photo: { shadow: '#101832', highlight: '#F2C94C', strength: 0.3, ring: 'dotted' },
   },
   // One night in old Dhaka, from the first glass of tea to the full moon.
   // Personality-led: 12 knowledge questions (3 per chapter), 16 scenarios (4 per chapter).

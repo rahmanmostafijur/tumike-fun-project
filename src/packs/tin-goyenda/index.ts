@@ -15,6 +15,8 @@ export default definePack({
   theme: {
     bg: '#0C1F24', surface: '#1B2C31', line: '#354549', accent: '#F0A545', onAccent: '#0C1F24',
     text: '#EAF3EF', muted: '#ACB8B6', disabled: '#919E9E',
+    // Player photo: Lamp-lit amber over sea-fog teal, inside one clean rim like a magnifying glass.
+    photo: { shadow: '#0C1F24', highlight: '#F0A545', strength: 0.3, ring: 'single' },
   },
   // Four cases; 16 knowledge questions (4 per case) and 16 scenarios (4 per case).
   stageLabel: { bn: 'কেস', en: 'Case' },

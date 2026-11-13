@@ -23,6 +23,26 @@ export type Rarity = (typeof RARITIES)[number]
 const hex = z.string().regex(/^#[0-9a-fA-F]{6}$/, 'expected a #RRGGBB colour')
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'expected a lowercase slug')
 
+/** How the edge of a player's photo is drawn on the result card. */
+export const PHOTO_RINGS = ['single', 'double', 'dotted', 'ticked'] as const
+export type PhotoRing = (typeof PHOTO_RINGS)[number]
+
+/**
+ * The pack's look for a player's own photo on the result card: a subtle
+ * duotone laid over the photo, plus a ring style at its edge. Dark and secret
+ * cards swap `highlight` for their own frame accent.
+ */
+export const PhotoTreatmentSchema = z.object({
+  /** Duotone colour for the darkest parts of the photo. */
+  shadow: hex,
+  /** Duotone colour for the brightest parts (regular cards). */
+  highlight: hex,
+  /** Share of the duotone laid over the real photo. Kept low so faces stay recognisable. */
+  strength: z.number().min(0.1).max(0.5),
+  ring: z.enum(PHOTO_RINGS),
+})
+export type PhotoTreatment = z.infer<typeof PhotoTreatmentSchema>
+
 export const ThemeSchema = z.object({
   bg: hex,
   surface: hex,
@@ -38,6 +58,8 @@ export const ThemeSchema = z.object({
   danger: hex.optional(),
   /** Frame colour for dark-side characters. */
   dark: hex.optional(),
+  /** Treatment for the player's own photo on the result card. */
+  photo: PhotoTreatmentSchema,
 })
 export type Theme = z.infer<typeof ThemeSchema>
 

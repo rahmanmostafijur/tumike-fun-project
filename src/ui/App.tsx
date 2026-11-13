@@ -25,7 +25,8 @@ type Screen =
   | { name: 'quiz'; mode: Mode; seed: number; fanSinceId: string | null }
   // `mode` is the mode just played, so "Play again" repeats it.
   | { name: 'reveal'; mode: Mode; result: QuizResult; fanSinceId: string | null; isNew: boolean }
-  | { name: 'result'; mode: Mode; result: QuizResult; fanSinceId: string | null; isNew: boolean }
+  // `photo`: the player's cropped photo for this result, in memory only (never stored).
+  | { name: 'result'; mode: Mode; result: QuizResult; fanSinceId: string | null; isNew: boolean; photo?: HTMLCanvasElement | null }
   | { name: 'collection'; back: Screen }
 
 /** Deep link (?pack= or #id) first, then the last viewed pack, then the default. */
@@ -187,6 +188,8 @@ export function App() {
             fanSinceId={screen.fanSinceId}
             unlocked={unlocked.length}
             isNew={screen.isNew}
+            photo={screen.photo ?? null}
+            onPhotoChange={(photo) => setScreen((s) => (s.name === 'result' ? { ...s, photo } : s))}
             onHome={home}
             onPlayAgain={() => setScreen({ name: 'fanSince', mode: screen.mode })}
             onCollection={() => setScreen({ name: 'collection', back: { ...screen, isNew: false } })}

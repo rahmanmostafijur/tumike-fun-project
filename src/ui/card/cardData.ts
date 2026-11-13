@@ -5,6 +5,7 @@ import { APP, SITE_HOST } from '../../config'
 import { fill, toBnDigits } from '../../i18n/I18n'
 import { strings } from '../../i18n/strings'
 import { monogramOf } from '../util'
+import type { CardPhoto } from '../photo/render'
 
 /**
  * Everything printed on a result card, already localised. The DOM card and
@@ -31,6 +32,8 @@ export interface CardData {
   site: string
   /** The pack's painting, shown as a band across the top of the card. */
   band: { src: string; focal: Point } | null
+  /** The player's own photo in place of the monogram, already treated for this card. Null = monogram. */
+  photo: CardPhoto | null
 }
 
 /** Height of the painted band at the top of the card, in card units (card is 342 wide). */
@@ -43,9 +46,10 @@ interface BuildArgs {
   lang: Lang
   playerName: string
   fanBadge: Localized | null
+  photo?: CardPhoto | null
 }
 
-export function buildCardData({ pack, character, result, lang, playerName, fanBadge }: BuildArgs): CardData {
+export function buildCardData({ pack, character, result, lang, playerName, fanBadge, photo = null }: BuildArgs): CardData {
   const s = (key: keyof typeof strings, vars: Record<string, string | number> = {}) => fill(strings[key][lang], vars)
   const n = (v: number) => (lang === 'bn' ? toBnDigits(v) : String(v))
   const trait = pack.traits.find((t) => t.id === result.trait)
@@ -69,6 +73,7 @@ export function buildCardData({ pack, character, result, lang, playerName, fanBa
     wordmark: APP.wordmark,
     site: SITE_HOST,
     band: pack.background ? { src: pack.background.src, focal: pack.background.cardFocal ?? pack.background.rest } : null,
+    photo,
   }
 }
 

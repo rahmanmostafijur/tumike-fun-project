@@ -147,7 +147,7 @@ export function ResultCard({ card, className }: { card: CardData; className?: st
       </div>
 
       <div className="relative mt-5">
-        <Monogram text={card.monogram} rarity={card.rarity} size={100} filled={Boolean(card.band)} />
+        <Monogram text={card.monogram} rarity={card.rarity} size={100} filled={Boolean(card.band)} photo={card.photo} />
       </div>
       <p className="relative mt-3.5 text-[15px] leading-5 text-muted">{card.youAre}</p>
       <h2

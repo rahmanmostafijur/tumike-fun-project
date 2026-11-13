@@ -16,6 +16,8 @@ export default definePack({
   theme: {
     bg: '#0D1318', surface: '#1C2126', line: '#363B3F', accent: '#A9CFE0', onAccent: '#0D1318',
     text: '#EAF1F5', muted: '#ACB3B7', disabled: '#92989D',
+    // Player photo: Cold ice blue over night grey, in a double rim like an old shield.
+    photo: { shadow: '#0D1318', highlight: '#A9CFE0', strength: 0.35, ring: 'double' },
   },
   // One stage per season; 32 knowledge questions, four per season.
   stageLabel: { bn: 'সিজন', en: 'Season' },

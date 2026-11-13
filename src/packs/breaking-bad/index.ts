@@ -16,6 +16,8 @@ export default definePack({
   theme: {
     bg: '#0F1A12', surface: '#1D2820', line: '#38413A', accent: '#C9D24A', onAccent: '#0F1A12',
     text: '#EEF1DF', muted: '#B0B5A6', disabled: '#959B8D',
+    // Player photo: Desert green-yellow over deep green, ringed with gauge ticks like lab glassware.
+    photo: { shadow: '#0F1A12', highlight: '#C9D24A', strength: 0.3, ring: 'ticked' },
   },
   // The five seasons; 21 questions spread over them (14 knowledge + 7 scenarios).
   stageLabel: { bn: 'সিজন', en: 'Season' },

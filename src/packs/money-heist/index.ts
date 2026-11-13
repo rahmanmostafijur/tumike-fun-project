@@ -19,6 +19,8 @@ export default definePack({
     text: '#F6E9E9', muted: '#B8ABAC', disabled: '#9E9091',
     // Dark-side frames in cold steel, so they never blend into the red accent.
     dark: '#9FB0C3',
+    // Player photo: A warm red wash over near-black, edged by one bold line like the jumpsuits.
+    photo: { shadow: '#1A0B0E', highlight: '#E6555D', strength: 0.28, ring: 'single' },
   },
   // The five parts of the series; 21 questions spread over them (5, 4, 4, 4, 4).
   stageLabel: { bn: 'পর্ব', en: 'Part' },

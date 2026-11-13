@@ -53,7 +53,7 @@ export function makeFixturePack(stages = 4): Pack {
     headline: L('Who are you in the fixture?'),
     primaryLang: 'en',
     icon: art,
-    theme: { bg: hex, surface: hex, line: hex, accent: hex, text: hex, muted: hex, disabled: hex, onAccent: hex, success: hex, danger: hex, dark: hex },
+    theme: { bg: hex, surface: hex, line: hex, accent: hex, text: hex, muted: hex, disabled: hex, onAccent: hex, success: hex, danger: hex, dark: hex, photo: { shadow: hex, highlight: hex, strength: 0.3, ring: 'single' as const } },
     stageLabel: L('Stage'),
     stages: Array.from({ length: stages }, (_, i) => ({ id: `stage-${i}`, label: L(`Stage ${i}`) })),
     lifelines: { fifty: L('50'), freeze: L('freeze'), swap: L('swap') },
