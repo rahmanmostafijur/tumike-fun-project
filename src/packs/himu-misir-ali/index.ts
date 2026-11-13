@@ -32,8 +32,8 @@ export default definePack({
     width: 941,
     height: 1672,
     rest: { x: 55, y: 12 },
-    // The moon over the old rooftops.
-    cardFocal: { x: 70, y: 16 },
+    // The old rooftops and the lit balcony; the moon stays out of the band so it never doubles the backdrop moon.
+    cardFocal: { x: 70, y: 25 },
     // Chapter 1 opens on the glass of tea and the stall; the walk ends under the full moon.
     journey: [
       { x: 32, y: 78 },

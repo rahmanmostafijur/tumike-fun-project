@@ -73,7 +73,7 @@ export function CardFrame({ rarity, mini = false }: { rarity: Rarity; mini?: boo
           { bottom: corner, right: corner, transform: 'scale(-1)' },
         ].map((s, i) => <Thorn key={i} style={s} />)}
       {rarity === 'secret' && !mini && (
-        <svg className="absolute left-1/2 -translate-x-1/2" style={{ top: 18 }} width="120" height="14" viewBox="0 0 120 14" aria-hidden="true">
+        <svg className="absolute left-1/2 -translate-x-1/2" style={{ top: 13 }} width="120" height="14" viewBox="0 0 120 14" aria-hidden="true">
           <path d="M8 9 L30 4 L52 10 L70 3 L92 9 L112 5" stroke="currentColor" strokeWidth="0.75" fill="none" opacity="0.5" />
           {[[8, 9], [30, 4], [52, 10], [70, 3], [92, 9], [112, 5]].map(([x, y], i) => (
             <circle key={i} cx={x} cy={y} r={i % 2 ? 1.6 : 1.1} fill="currentColor" />
@@ -98,6 +98,24 @@ function TierLabel({ card }: { card: CardData }) {
     >
       <span className={latin ? 'pt-px' : 'pt-0.5'}>{card.tierLabel}</span>
     </span>
+  )
+}
+
+/**
+ * Breaks a name only at spaces, never after a hyphen ("The Three-Eyed /
+ * Raven", not "The Three- / Eyed Raven"), matching the image export.
+ */
+function NameWords({ name }: { name: string }) {
+  const words = name.split(' ')
+  return (
+    <>
+      {words.map((w, i) => (
+        <span key={i}>
+          {w.includes('-') ? <span className="whitespace-nowrap">{w}</span> : w}
+          {i < words.length - 1 ? ' ' : ''}
+        </span>
+      ))}
+    </>
   )
 }
 
@@ -136,7 +154,7 @@ export function ResultCard({ card, className }: { card: CardData; className?: st
         className={cx('relative mt-1 text-balance text-ink', nameFontClass(card.name))}
         style={{ fontSize: nameLatin ? (longName ? 34 : 38) : 32, lineHeight: 1.08 }}
       >
-        {card.name}
+        <NameWords name={card.name} />
       </h2>
 
       {(card.match !== null || card.badge) && (

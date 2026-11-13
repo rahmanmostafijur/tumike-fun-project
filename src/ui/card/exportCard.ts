@@ -187,12 +187,13 @@ function drawFrame(ctx: Ctx, card: CardData, theme: FullTheme, h: number) {
     ctx.globalAlpha = 0.5
     ctx.lineWidth = 0.75
     ctx.beginPath()
-    pts.forEach(([x, y], i) => (i ? ctx.lineTo(ox + x, 18 + y) : ctx.moveTo(ox + x, 18 + y)))
+    // Top 13 matches the on-screen card and keeps clear of a long trait pill.
+    pts.forEach(([x, y], i) => (i ? ctx.lineTo(ox + x, 13 + y) : ctx.moveTo(ox + x, 13 + y)))
     ctx.stroke()
     ctx.globalAlpha = 1
     pts.forEach(([x, y], i) => {
       ctx.beginPath()
-      ctx.arc(ox + x, 18 + y, i % 2 ? 1.6 : 1.1, 0, Math.PI * 2)
+      ctx.arc(ox + x, 13 + y, i % 2 ? 1.6 : 1.1, 0, Math.PI * 2)
       ctx.fill()
     })
   }

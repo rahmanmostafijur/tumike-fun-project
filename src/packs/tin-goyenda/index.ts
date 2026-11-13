@@ -30,8 +30,8 @@ export default definePack({
     width: 941,
     height: 1672,
     rest: { x: 45, y: 12 },
-    // The band on the result card shows the lit house on the cliff under the moon.
-    cardFocal: { x: 38, y: 16 },
+    // The band on the result card shows the lit house on the cliff; the moon stays out of it so it never doubles the backdrop moon.
+    cardFocal: { x: 38, y: 25 },
     // Case 1 opens by the bicycles and the salvage yard; the last case reaches the house on the cliff.
     journey: [
       { x: 34, y: 70 },
