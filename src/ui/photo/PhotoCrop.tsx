@@ -112,7 +112,8 @@ export function PhotoCrop({ source, onDone, onCancel }: PhotoCropProps) {
           role="img"
           aria-label={t('photo.area')}
           className="mt-4 cursor-grab touch-none overflow-hidden rounded-full border-2 border-accent outline-offset-4 select-none active:cursor-grabbing"
-          style={{ width: view, height: view }}
+          // Inline radius: the global :focus-visible rule would otherwise square the circle while focused.
+          style={{ width: view, height: view, borderRadius: '50%' }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
