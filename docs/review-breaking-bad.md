@@ -39,8 +39,8 @@ To fix a question, edit `src/packs/breaking-bad/knowledge.ts`. The correct optio
 ### 3. Where does Walt work a second job at the start of the story?
 
 - **Question (bn):** গল্পের শুরুতে Walt কোথায় দ্বিতীয় চাকরি করেন?
-- **Opening line:** Remember how it stung to see Walt scrubbing his own students' cars after school?
-- **Opening line (bn):** ক্লাস শেষে Walt-কে নিজের ছাত্রদেরই গাড়ি ঘষতে দেখে বুকটা কেমন করে উঠেছিল, মনে আছে?
+- **Opening line:** Remember how a teacher's pay never stretched far enough, so after the last bell Walt hurried off to a second job?
+- **Opening line (bn):** শিক্ষকের বেতনে সংসার চলে না, তাই শেষ ঘণ্টা বাজলেই Walt ছুটত আরেকটা কাজে, মনে আছে?
 - **Options:**
   - A. At a car wash / একটা কার ওয়াশে **(correct)**
   - B. At a pizza place / একটা পিৎজার দোকানে
@@ -167,8 +167,8 @@ To fix a question, edit `src/packs/breaking-bad/knowledge.ts`. The correct optio
 ### 13. What was Jane Margolis to Jesse when they first met?
 
 - **Question (bn):** প্রথম দেখায় Jane Margolis ছিল Jesse-র কী?
-- **Opening line:** The young woman next door, whose first conversation with Jesse was about the rent…
-- **Opening line (bn):** পাশের বাড়ির সেই মেয়েটা, যার সাথে প্রথম আলাপটা হয়েছিল ভাড়া নিয়ে…
+- **Opening line:** Long before everything that happened between them, Jesse and Jane met in a very ordinary way…
+- **Opening line (bn):** তাদের মধ্যে যা যা ঘটেছিল তার অনেক আগে, Jesse আর Jane-এর প্রথম দেখাটা হয়েছিল একেবারে সাধারণভাবে…
 - **Options:**
   - A. His landlady / তার বাড়িওয়ালি **(correct)**
   - B. His lawyer's assistant / তার উকিলের সহকারী
@@ -206,8 +206,8 @@ To fix a question, edit `src/packs/breaking-bad/knowledge.ts`. The correct optio
 ### 16. Where is Gus's hidden lab?
 
 - **Question (bn):** Gus-এর গোপন ল্যাবটা কোথায় লুকোনো?
-- **Opening line:** From outside it looked like nothing but hot steam and rows of clean sheets…
-- **Opening line (bn):** বাইরে থেকে দেখলে শুধু গরম বাষ্প আর ধোয়া কাপড়ের সারি…
+- **Opening line:** Gus never kept anything where anyone would think to look, least of all his lab…
+- **Opening line (bn):** Gus কখনো কিছু এমন জায়গায় রাখত না যেখানে কেউ খুঁজতে যাবে, নিজের ল্যাব তো নয়ই…
 - **Options:**
   - A. Beneath an industrial laundry / একটা ইন্ডাস্ট্রিয়াল লন্ড্রির নিচে **(correct)**
   - B. Beneath a car wash / একটা কার ওয়াশের নিচে

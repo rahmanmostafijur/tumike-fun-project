@@ -13,8 +13,8 @@ To fix a question, edit `src/packs/game-of-thrones/knowledge.ts`; the correct op
 ### 1. Which house has a grey direwolf as its sigil?
 
 - **Question (bn):** ধূসর direwolf কোন House-এর প্রতীক?
-- **Opening line:** Remember the little pups found in the snow in the very first episode, one for each of the children?
-- **Opening line (bn):** মনে আছে, একেবারে প্রথম পর্বেই বরফের মধ্যে পাওয়া সেই ছোট্ট ছানাগুলো, ভাইবোনদের প্রত্যেকের জন্য একটা করে?
+- **Opening line:** Remember the very first episode, when every great house's banner was still new to you?
+- **Opening line (bn):** মনে আছে, একেবারে প্রথম পর্বে যখন প্রতিটা বড় পরিবারের পতাকাই তোমার কাছে নতুন ছিল?
 - **Options:**
   - A. Stark **(correct)**
   - B. Lannister
@@ -39,8 +39,8 @@ To fix a question, edit `src/packs/game-of-thrones/knowledge.ts`; the correct op
 ### 3. What is Arya's sword called?
 
 - **Question (bn):** Arya-র সেই তলোয়ারের নাম কী?
-- **Opening line:** Before saying goodbye, a brother gave his little sister a slim, light sword…
-- **Opening line (bn):** বিদায়ের আগে এক ভাই তার ছোট বোনকে দিয়েছিল একটা সরু, হালকা তলোয়ার…
+- **Opening line:** Before saying goodbye, a brother gave his little sister a gift she would hold on to through everything…
+- **Opening line (bn):** বিদায়ের আগে এক ভাই তার ছোট বোনকে দিয়েছিল এমন এক উপহার, যেটা সে সব বিপদেও আগলে রেখেছিল…
 - **Options:**
   - A. Needle **(correct)**
   - B. Longclaw
@@ -65,8 +65,8 @@ To fix a question, edit `src/packs/game-of-thrones/knowledge.ts`; the correct op
 ### 5. Which house has a golden kraken as its sigil?
 
 - **Question (bn):** সোনালি kraken কোন House-এর প্রতীক?
-- **Opening line:** Remember the chilly welcome Theon got when he finally sailed home to his islands?
-- **Opening line (bn):** অনেক বছর পর Theon যখন নিজের দ্বীপে ফিরল, সেখানকার ঠান্ডা অভ্যর্থনাটা মনে আছে?
+- **Opening line:** Every house in Westeros flies its own beast or badge, and some are stranger than others…
+- **Opening line (bn):** Westeros-এর প্রতিটা পরিবারের পতাকায় নিজস্ব কোনো প্রাণী বা প্রতীক, আর কয়েকটা তো বেশ অদ্ভুত…
 - **Options:**
   - A. Greyjoy **(correct)**
   - B. Tully
@@ -78,8 +78,8 @@ To fix a question, edit `src/packs/game-of-thrones/knowledge.ts`; the correct op
 ### 6. What dangerous green substance did Tyrion use to defend King's Landing?
 
 - **Question (bn):** King's Landing রক্ষায় Tyrion কোন সবুজ, ভয়ংকর জিনিস কাজে লাগিয়েছিল?
-- **Opening line:** That night on the Blackwater, when the river itself burst into green flame…
-- **Opening line (bn):** Blackwater-এর সেই রাত, যখন নদীর পানিতেই জ্বলে উঠেছিল সবুজ আগুন…
+- **Opening line:** That night on the Blackwater, when Tyrion's hidden plan finally showed itself…
+- **Opening line (bn):** Blackwater-এর সেই রাত, যখন অবশেষে সামনে এল Tyrion-এর গোপন পরিকল্পনা…
 - **Options:**
   - A. Wildfire **(correct)**
   - B. Dragonglass
@@ -102,8 +102,8 @@ To fix a question, edit `src/packs/game-of-thrones/knowledge.ts`; the correct op
 ### 8. Which god does Melisandre serve?
 
 - **Question (bn):** Melisandre কোন দেবতার সেবা করে?
-- **Opening line:** A mysterious woman in red who claims to see the future in the flames…
-- **Opening line (bn):** লাল পোশাকের এক রহস্যময় নারী, যে আগুনের শিখায় ভবিষ্যৎ দেখার দাবি করে…
+- **Opening line:** A mysterious foreign priestess who almost never left Stannis's side…
+- **Opening line (bn):** এক রহস্যময় বিদেশিনী পুরোহিত, যে প্রায় কখনোই Stannis-এর পাশ ছাড়ত না…
 - **Options:**
   - A. The Lord of Light **(correct)**
   - B. The Many-Faced God
@@ -141,8 +141,8 @@ To fix a question, edit `src/packs/game-of-thrones/knowledge.ts`; the correct op
 ### 11. Which house has a golden rose as its sigil?
 
 - **Question (bn):** সোনালি গোলাপ কোন House-এর প্রতীক?
-- **Opening line:** A sharp-witted grandmother from Highgarden whom nobody dares to talk back to…
-- **Opening line (bn):** Highgarden-এর এক তীক্ষ্ণ বুদ্ধির দাদি, যার মুখের ওপর কথা বলার সাহস কারো নেই…
+- **Opening line:** Remember the tourney in King's Landing, with banners from every corner of the realm flying over the field?
+- **Opening line (bn):** মনে আছে King's Landing-এর সেই টুর্নামেন্ট, রাজ্যের সব কোণ থেকে আসা পতাকা উড়ছিল মাঠের ওপর?
 - **Options:**
   - A. Tyrell **(correct)**
   - B. Tully
@@ -169,8 +169,8 @@ To fix a question, edit `src/packs/game-of-thrones/knowledge.ts`; the correct op
 ### 13. Who is Arya's reluctant travelling companion?
 
 - **Question (bn):** Arya-র সেই অনিচ্ছুক সঙ্গী কে?
-- **Opening line:** A long road through the Riverlands, a grumpy giant of a man and a small girl who cannot stand each other…
-- **Opening line (bn):** Riverlands-এর লম্বা পথ, এক রাগী বিশালদেহী লোক আর এক ছোট্ট মেয়ে, যারা একে অপরকে মোটেও সহ্য করতে পারে না…
+- **Opening line:** A long road through the Riverlands, and a companion Arya would never have chosen herself…
+- **Opening line (bn):** Riverlands-এর লম্বা পথ, আর এমন এক সঙ্গী যাকে Arya নিজে কখনো বেছে নিত না…
 - **Options:**
   - A. The Hound **(correct)**
   - B. Gendry
@@ -182,8 +182,8 @@ To fix a question, edit `src/packs/game-of-thrones/knowledge.ts`; the correct op
 ### 14. What does Brienne name the sword?
 
 - **Question (bn):** Brienne তলোয়ারটার কী নাম দেয়?
-- **Opening line:** Jaime handed Brienne a gleaming Valyrian steel sword, along with a big promise to keep…
-- **Opening line (bn):** Jaime একটা ঝকঝকে Valyrian steel-এর তলোয়ার তুলে দিল Brienne-এর হাতে, সাথে রাখার মতো একটা বড় কথাও…
+- **Opening line:** Jaime handed Brienne a gleaming Valyrian steel sword, and she gave it a name of her own…
+- **Opening line (bn):** Jaime একটা ঝকঝকে Valyrian steel-এর তলোয়ার তুলে দিল Brienne-এর হাতে, আর Brienne সেটার একটা নিজস্ব নাম রাখল…
 - **Options:**
   - A. Oathkeeper **(correct)**
   - B. Widow's Wail
@@ -325,8 +325,8 @@ To fix a question, edit `src/packs/game-of-thrones/knowledge.ts`; the correct op
 ### 25. Where did she land?
 
 - **Question (bn):** কোথায় নামলেন তিনি?
-- **Opening line:** After many years, Daenerys set foot in Westeros at the old fortress of her ancestors…
-- **Opening line (bn):** বহু বছর পর Westeros-এর মাটিতে পা রাখলেন Daenerys, পূর্বপুরুষদের পুরোনো দুর্গে…
+- **Opening line:** After many years in exile, Daenerys finally set foot in Westeros…
+- **Opening line (bn):** বহু বছরের নির্বাসন শেষে অবশেষে Westeros-এর মাটিতে পা রাখলেন Daenerys…
 - **Options:**
   - A. Dragonstone **(correct)**
   - B. Storm's End
@@ -388,8 +388,8 @@ To fix a question, edit `src/packs/game-of-thrones/knowledge.ts`; the correct op
 ### 30. What was the song?
 
 - **Question (bn):** গানটার নাম কী?
-- **Opening line:** On the night before the great battle, Podrick began an old song and the whole room fell silent…
-- **Opening line (bn):** বড় লড়াইয়ের আগের রাতে Podrick ধরল এক পুরোনো গান, আর পুরো ঘর চুপ হয়ে গেল…
+- **Opening line:** On the night before the great battle, Podrick began to sing and the whole room fell silent…
+- **Opening line (bn):** বড় লড়াইয়ের আগের রাতে Podrick গান ধরল, আর পুরো ঘর চুপ হয়ে গেল…
 - **Options:**
   - A. Jenny of Oldstones **(correct)**
   - B. The Rains of Castamere

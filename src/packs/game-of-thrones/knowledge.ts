@@ -22,7 +22,7 @@ function q(id: string, stage: number, memory: Localized | null, prompt: Localize
 export const knowledge: Q[] = [
   // Season 1: the king rides north
   q('k-direwolf', 1,
-    L('মনে আছে, একেবারে প্রথম পর্বেই বরফের মধ্যে পাওয়া সেই ছোট্ট ছানাগুলো, ভাইবোনদের প্রত্যেকের জন্য একটা করে?', 'Remember the little pups found in the snow in the very first episode, one for each of the children?'),
+    L('মনে আছে, একেবারে প্রথম পর্বে যখন প্রতিটা বড় পরিবারের পতাকাই তোমার কাছে নতুন ছিল?', 'Remember the very first episode, when every great house\'s banner was still new to you?'),
     L('ধূসর direwolf কোন House-এর প্রতীক?', 'Which house has a grey direwolf as its sigil?'),
     [N('Stark'), N('Lannister'), N('Baratheon'), N('Targaryen')]),
   q('k-hand', 1,
@@ -30,7 +30,7 @@ export const knowledge: Q[] = [
     L('King Robert, Ned Stark-কে কোন পদ নিতে বলেন?', 'Which post does King Robert ask Ned Stark to take?'),
     [N('Hand of the King'), N('Master of Coin'), N('Lord Commander of the Kingsguard'), N('Master of Whisperers')]),
   q('k-needle', 1,
-    L('বিদায়ের আগে এক ভাই তার ছোট বোনকে দিয়েছিল একটা সরু, হালকা তলোয়ার…', 'Before saying goodbye, a brother gave his little sister a slim, light sword…'),
+    L('বিদায়ের আগে এক ভাই তার ছোট বোনকে দিয়েছিল এমন এক উপহার, যেটা সে সব বিপদেও আগলে রেখেছিল…', 'Before saying goodbye, a brother gave his little sister a gift she would hold on to through everything…'),
     L('Arya-র সেই তলোয়ারের নাম কী?', 'What is Arya\'s sword called?'),
     [N('Needle'), N('Longclaw'), N('Oathkeeper'), N('Ice')]),
   q('k-ghost', 1, null,
@@ -39,18 +39,18 @@ export const knowledge: Q[] = [
 
   // Season 2: one throne, many crowns
   q('k-kraken', 2,
-    L('অনেক বছর পর Theon যখন নিজের দ্বীপে ফিরল, সেখানকার ঠান্ডা অভ্যর্থনাটা মনে আছে?', 'Remember the chilly welcome Theon got when he finally sailed home to his islands?'),
+    L('Westeros-এর প্রতিটা পরিবারের পতাকায় নিজস্ব কোনো প্রাণী বা প্রতীক, আর কয়েকটা তো বেশ অদ্ভুত…', 'Every house in Westeros flies its own beast or badge, and some are stranger than others…'),
     L('সোনালি kraken কোন House-এর প্রতীক?', 'Which house has a golden kraken as its sigil?'),
     [N('Greyjoy'), N('Tully'), N('Arryn'), N('Martell')]),
   q('k-wildfire', 2,
-    L('Blackwater-এর সেই রাত, যখন নদীর পানিতেই জ্বলে উঠেছিল সবুজ আগুন…', 'That night on the Blackwater, when the river itself burst into green flame…'),
+    L('Blackwater-এর সেই রাত, যখন অবশেষে সামনে এল Tyrion-এর গোপন পরিকল্পনা…', 'That night on the Blackwater, when Tyrion\'s hidden plan finally showed itself…'),
     L('King\'s Landing রক্ষায় Tyrion কোন সবুজ, ভয়ংকর জিনিস কাজে লাগিয়েছিল?', 'What dangerous green substance did Tyrion use to defend King\'s Landing?'),
     [N('Wildfire'), N('Dragonglass'), N('Milk of the poppy'), N('Shade of the evening')]),
   q('k-qarth', 2, null,
     L('Red Waste মরুভূমি পার হয়ে Daenerys কোন শহরে পৌঁছায়?', 'Which city does Daenerys reach after crossing the Red Waste?'),
     [N('Qarth'), N('Meereen'), N('Braavos'), N('Pentos')]),
   q('k-lord-of-light', 2,
-    L('লাল পোশাকের এক রহস্যময় নারী, যে আগুনের শিখায় ভবিষ্যৎ দেখার দাবি করে…', 'A mysterious woman in red who claims to see the future in the flames…'),
+    L('এক রহস্যময় বিদেশিনী পুরোহিত, যে প্রায় কখনোই Stannis-এর পাশ ছাড়ত না…', 'A mysterious foreign priestess who almost never left Stannis\'s side…'),
     L('Melisandre কোন দেবতার সেবা করে?', 'Which god does Melisandre serve?'),
     [N('The Lord of Light'), N('The Many-Faced God'), N('The Drowned God'), N('The Old Gods')]),
 
@@ -63,7 +63,7 @@ export const knowledge: Q[] = [
     L('দেয়ালের ওপারের wildling-দের নেতা, King-Beyond-the-Wall কে?', 'Who leads the wildlings as the King-Beyond-the-Wall?'),
     [N('Mance Rayder'), N('Tormund Giantsbane'), N('Craster'), N('Ygritte')]),
   q('k-rose', 3,
-    L('Highgarden-এর এক তীক্ষ্ণ বুদ্ধির দাদি, যার মুখের ওপর কথা বলার সাহস কারো নেই…', 'A sharp-witted grandmother from Highgarden whom nobody dares to talk back to…'),
+    L('মনে আছে King\'s Landing-এর সেই টুর্নামেন্ট, রাজ্যের সব কোণ থেকে আসা পতাকা উড়ছিল মাঠের ওপর?', 'Remember the tourney in King\'s Landing, with banners from every corner of the realm flying over the field?'),
     L('সোনালি গোলাপ কোন House-এর প্রতীক?', 'Which house has a golden rose as its sigil?'),
     [N('Tyrell'), N('Tully'), N('Arryn'), N('Tarly')]),
   q('k-reeds', 3,
@@ -73,11 +73,11 @@ export const knowledge: Q[] = [
 
   // Season 4: whispers in the capital
   q('k-hound', 4,
-    L('Riverlands-এর লম্বা পথ, এক রাগী বিশালদেহী লোক আর এক ছোট্ট মেয়ে, যারা একে অপরকে মোটেও সহ্য করতে পারে না…', 'A long road through the Riverlands, a grumpy giant of a man and a small girl who cannot stand each other…'),
+    L('Riverlands-এর লম্বা পথ, আর এমন এক সঙ্গী যাকে Arya নিজে কখনো বেছে নিত না…', 'A long road through the Riverlands, and a companion Arya would never have chosen herself…'),
     L('Arya-র সেই অনিচ্ছুক সঙ্গী কে?', 'Who is Arya\'s reluctant travelling companion?'),
     [N('The Hound'), N('Gendry'), N('Jaqen H\'ghar'), N('Hot Pie')]),
   q('k-oathkeeper', 4,
-    L('Jaime একটা ঝকঝকে Valyrian steel-এর তলোয়ার তুলে দিল Brienne-এর হাতে, সাথে রাখার মতো একটা বড় কথাও…', 'Jaime handed Brienne a gleaming Valyrian steel sword, along with a big promise to keep…'),
+    L('Jaime একটা ঝকঝকে Valyrian steel-এর তলোয়ার তুলে দিল Brienne-এর হাতে, আর Brienne সেটার একটা নিজস্ব নাম রাখল…', 'Jaime handed Brienne a gleaming Valyrian steel sword, and she gave it a name of her own…'),
     L('Brienne তলোয়ারটার কী নাম দেয়?', 'What does Brienne name the sword?'),
     [N('Oathkeeper'), N('Widow\'s Wail'), N('Longclaw'), N('Heartsbane')]),
   q('k-eyrie', 4, null,
@@ -124,7 +124,7 @@ export const knowledge: Q[] = [
 
   // Season 7: allies at Dragonstone
   q('k-dragonstone', 7,
-    L('বহু বছর পর Westeros-এর মাটিতে পা রাখলেন Daenerys, পূর্বপুরুষদের পুরোনো দুর্গে…', 'After many years, Daenerys set foot in Westeros at the old fortress of her ancestors…'),
+    L('বহু বছরের নির্বাসন শেষে অবশেষে Westeros-এর মাটিতে পা রাখলেন Daenerys…', 'After many years in exile, Daenerys finally set foot in Westeros…'),
     L('কোথায় নামলেন তিনি?', 'Where did she land?'),
     [N('Dragonstone'), N('Storm\'s End'), N('Sunspear'), N('Casterly Rock')]),
   q('k-wight', 7,
@@ -144,7 +144,7 @@ export const knowledge: Q[] = [
     L('Brienne of Tarth-কে নাইট উপাধি দেন কে?', 'Who knights Brienne of Tarth?'),
     [N('Jaime Lannister'), N('Jon Snow'), N('Davos Seaworth'), N('Podrick Payne')]),
   q('k-pod-song', 8,
-    L('বড় লড়াইয়ের আগের রাতে Podrick ধরল এক পুরোনো গান, আর পুরো ঘর চুপ হয়ে গেল…', 'On the night before the great battle, Podrick began an old song and the whole room fell silent…'),
+    L('বড় লড়াইয়ের আগের রাতে Podrick গান ধরল, আর পুরো ঘর চুপ হয়ে গেল…', 'On the night before the great battle, Podrick began to sing and the whole room fell silent…'),
     L('গানটার নাম কী?', 'What was the song?'),
     [N('Jenny of Oldstones'), N('The Rains of Castamere'), N('The Bear and the Maiden Fair'), N('It\'s Always Summer Under the Sea')]),
   q('k-golden-company', 8, null,
