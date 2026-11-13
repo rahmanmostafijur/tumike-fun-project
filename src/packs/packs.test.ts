@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'vitest'
 import { allPacks, getAnyPack, getPack, listedPacks, packErrors, packs } from './index'
 import { buildQuiz, modeLength } from '../engine/selection'
-import { computeResult } from '../engine/scoring'
-import { TIERS } from '../engine/schema'
+import { computeResult, knowledgePercent, resolveCharacter, tierFor } from '../engine/scoring'
+import { TIERS, type Pack, type Tier } from '../engine/schema'
 import { createRng } from '../engine/rng'
 
 describe('pack registry', () => {
@@ -65,6 +65,79 @@ describe('every pack always produces a real result', () => {
       }
     })
   }
+})
+
+describe('a fallback never promotes a player above the tier they earned', () => {
+  const answers = (right: number, total: number) => Array.from({ length: total }, (_, i) => ({ correct: i < right }))
+  // A knowledge score that earns `tier` under the pack's own thresholds.
+  const scoreFor = (pack: Pack, tier: Tier) => {
+    const total = 20
+    const right = Array.from({ length: total + 1 }, (_, n) => n).find((n) => tierFor(knowledgePercent(answers(n, total)), pack.tiers.thresholds) === tier)
+    return answers(right ?? 0, total)
+  }
+  const rank = (tier: Tier | undefined) => (tier ? TIERS.indexOf(tier) : -1)
+  // Case c: a higher tier is allowed only when nothing of that kind exists at or below the earned tier.
+  const nothingAtOrBelow = (pack: Pack, kind: 'regular' | 'dark', earned: Tier) =>
+    !pack.characters.some((c) => c.kind === kind && rank(c.tier) <= rank(earned))
+  // Scenario answers whose trait ranking is exactly `[first, ...rest]`.
+  const leaning = (first: string, rest: readonly string[], dark: boolean) =>
+    [first, ...rest].map((trait, i) => ({ stage: 1, weights: { [trait]: 10 - i }, dark }))
+
+  for (const pack of packs) {
+    const order = pack.traits.map((t) => t.id)
+
+    test(`${pack.id}: every tier x trait, regular and dark, stays at or below the earned tier`, () => {
+      for (const tier of TIERS) {
+        for (const trait of order) {
+          for (const dark of [false, true]) {
+            const r = computeResult(pack, 'quick', scoreFor(pack, tier), leaning(trait, order.filter((t) => t !== trait), dark))
+            const given = pack.characters.find((c) => c.id === r.characterId)!
+            if (rank(given.tier) > rank(tier)) {
+              const kind = given.kind === 'dark' ? 'dark' : 'regular'
+              expect(nothingAtOrBelow(pack, kind, tier), `${tier}/${trait}${dark ? '/dark' : ''} gave ${given.id}`).toBe(true)
+            }
+          }
+        }
+      }
+    })
+
+    test(`${pack.id}: for every trait ranking, the earned tier's best available trait is given`, () => {
+      const perms = (xs: string[]): string[][] =>
+        xs.length <= 1 ? [xs] : xs.flatMap((x, i) => perms([...xs.slice(0, i), ...xs.slice(i + 1)]).map((p) => [x, ...p]))
+      for (const tier of TIERS) {
+        const inTier = pack.characters.filter((c) => c.kind === 'regular' && c.tier === tier)
+        for (const ranking of perms(order)) {
+          const given = resolveCharacter(pack.characters, tier, ranking, { dark: false, secret: false })
+          if (rank(given.tier) > rank(tier)) expect(nothingAtOrBelow(pack, 'regular', tier)).toBe(true)
+          if (inTier.length > 0) {
+            expect(given.tier).toBe(tier)
+            expect(given.trait).toBe(ranking.find((t) => inTier.some((c) => c.trait === t)))
+          }
+        }
+      }
+    })
+  }
+
+  test('full rosters always land on the exact earned tier and winning trait', () => {
+    for (const pack of packs.filter((p) => p.roster === 'full')) {
+      const order = pack.traits.map((t) => t.id)
+      for (const tier of TIERS) {
+        for (const trait of order) {
+          const given = resolveCharacter(pack.characters, tier, [trait, ...order.filter((t) => t !== trait)], { dark: false, secret: false })
+          expect([given.tier, given.trait]).toEqual([tier, trait])
+          expect(resolveCharacter(pack.characters, tier, [trait], { dark: true, secret: false })).toMatchObject({ kind: 'dark', tier })
+        }
+      }
+    }
+  })
+
+  test('playtest case: Himu & Misir Ali quick, 0 of 3 right with a mysterious lean, stays Beginner', () => {
+    const himu = getPack('himu-misir-ali')!
+    const order = himu.traits.map((t) => t.id)
+    const r = computeResult(himu, 'quick', answers(0, 3), leaning('mysterious', order.filter((t) => t !== 'mysterious'), false))
+    expect(r.tier).toBe('beginner')
+    expect(r.characterId).not.toBe('ranu')
+  })
 })
 
 describe('harry potter pack', () => {

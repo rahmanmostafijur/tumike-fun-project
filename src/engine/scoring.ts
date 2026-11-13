@@ -108,17 +108,27 @@ export function traitRanking(outcomes: readonly ScenarioOutcome[], traitOrder: r
   return [winner, ...rest]
 }
 
-/** Tiers from the given one outwards; on equal distance the higher tier comes first. */
-export function tiersByDistance(tier: Tier): Tier[] {
+/**
+ * The order tiers are searched in for an earned tier: the earned tier itself,
+ * then every lower tier (closest first), and only then the higher tiers
+ * (closest first) as a last resort. A fallback never promotes while a lower
+ * tier can still fill the slot.
+ */
+export function fallbackTiers(tier: Tier): Tier[] {
   const at = TIERS.indexOf(tier)
-  return [...TIERS].sort((a, b) => Math.abs(TIERS.indexOf(a) - at) - Math.abs(TIERS.indexOf(b) - at) || TIERS.indexOf(b) - TIERS.indexOf(a))
+  const lower = TIERS.slice(0, at).reverse()
+  const higher = TIERS.slice(at + 1)
+  return [tier, ...lower, ...higher]
 }
 
 /**
  * Finds the character for a tier and trait ranking, honouring secret and dark.
- * Full rosters always hit their exact slot. Small rosters fall back to the
- * nearest filled slot: the same trait in the closest tier first, then the
- * next-best trait. Several secrets: the one whose trait the player leaned to most.
+ * Full rosters always hit their exact slot. Small rosters fall back in this
+ * order: the next-best trait within the earned tier; only if that tier has no
+ * regular characters at all, the closest lower tier (best trait first); a
+ * higher tier only when nothing lower exists. Dark looks for the earned tier's
+ * dark character, then lower, then higher. Several secrets: the one whose
+ * trait the player leaned to most.
  */
 export function resolveCharacter(
   characters: readonly Character[],
@@ -126,7 +136,7 @@ export function resolveCharacter(
   ranking: readonly string[],
   flags: { dark: boolean; secret: boolean },
 ): Character {
-  const tiers = tiersByDistance(tier)
+  const tiers = fallbackTiers(tier)
   const of = (kind: Character['kind']) => characters.filter((c) => c.kind === kind)
 
   if (flags.secret) {
@@ -139,8 +149,9 @@ export function resolveCharacter(
     if (pick) return pick
   }
   const regulars = of('regular')
-  for (const trait of ranking) {
-    const pick = tiers.map((t) => regulars.find((c) => c.tier === t && c.trait === trait)).find(Boolean)
+  for (const t of tiers) {
+    const inTier = regulars.filter((c) => c.tier === t)
+    const pick = ranking.map((trait) => inTier.find((c) => c.trait === trait)).find(Boolean) ?? inTier[0]
     if (pick) return pick
   }
   const any = regulars[0] ?? characters[0]

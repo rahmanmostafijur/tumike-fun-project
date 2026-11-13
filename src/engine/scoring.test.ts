@@ -6,7 +6,7 @@ import {
   knowledgePercent,
   matchPercent,
   tierFor,
-  tiersByDistance,
+  fallbackTiers,
   traitTotals,
   winningTrait,
   type ScenarioOutcome,
@@ -167,27 +167,40 @@ describe('small rosters fall back to the nearest filled slot', () => {
   const SKILLED = answers(3, 6)
   const BEGINNER = answers(1, 6)
 
-  test('tiers are tried from the scored one outwards, higher first on a tie', () => {
-    expect(tiersByDistance('skilled')).toEqual(['skilled', 'legend', 'beginner'])
-    expect(tiersByDistance('beginner')).toEqual(['beginner', 'skilled', 'legend'])
+  test('tiers are tried earned first, then lower (closest first), then higher as a last resort', () => {
+    expect(fallbackTiers('legend')).toEqual(['legend', 'skilled', 'beginner'])
+    expect(fallbackTiers('skilled')).toEqual(['skilled', 'beginner', 'legend'])
+    expect(fallbackTiers('beginner')).toEqual(['beginner', 'skilled', 'legend'])
   })
 
-  test('an empty slot takes the same trait in the closest tier', () => {
-    const r = computeResult(pack, 'quick', SKILLED, lean('brave'))
+  test('a) an empty slot takes the next-best trait within the earned tier', () => {
+    const r = computeResult(pack, 'quick', LEGEND, lean('clever'))
     expect(r.characterId).toBe('legend-brave')
-    expect(r.tier).toBe('legend') // the card shows the character's own tier
-    expect(computeResult(pack, 'quick', BEGINNER, lean('brave')).characterId).toBe('legend-brave')
-    expect(computeResult(pack, 'quick', LEGEND, lean('clever')).characterId).toBe('beginner-clever')
+    expect(r.tier).toBe('legend')
+    expect(computeResult(pack, 'quick', BEGINNER, lean('brave')).characterId).toBe('beginner-clever')
   })
 
-  test('a trait with no characters at all falls back to the next-best trait', () => {
+  test('a) inside the tier, the player ranking decides between several characters', () => {
+    const two = PackSchema.parse({ ...pack, characters: [...pack.characters, base.characters.find((c) => c.id === 'beginner-brave')!] })
+    expect(computeResult(two, 'quick', BEGINNER, lean('brave')).characterId).toBe('beginner-brave')
+    expect(computeResult(two, 'quick', BEGINNER, lean('clever')).characterId).toBe('beginner-clever')
+  })
+
+  test('b) a tier with no characters at all drops to the closest lower tier, never up', () => {
+    const r = computeResult(pack, 'quick', SKILLED, lean('brave'))
+    expect(r.characterId).toBe('beginner-clever') // not legend-brave
+    expect(r.tier).toBe('beginner')
+  })
+
+  test('c) a higher tier only when nothing lower exists', () => {
     const solo = PackSchema.parse({ ...pack, characters: pack.characters.filter((c) => c.id !== 'beginner-clever') })
-    const outcomes = [{ stage: 1, weights: { clever: 3, brave: 1 }, dark: false }]
-    expect(computeResult(solo, 'quick', LEGEND, outcomes).characterId).toBe('legend-brave')
+    expect(computeResult(solo, 'quick', BEGINNER, lean('clever')).characterId).toBe('legend-brave')
+    expect(computeResult(solo, 'quick', SKILLED, lean('clever')).characterId).toBe('legend-brave')
   })
 
-  test('dark takes the closest dark tier, or a regular result when there is none', () => {
+  test('dark takes the earned or closest lower dark tier, a higher one only as a last resort, else a regular', () => {
     expect(computeResult(pack, 'quick', LEGEND, lean('brave', true)).characterId).toBe('skilled-dark')
+    expect(computeResult(pack, 'quick', BEGINNER, lean('brave', true)).characterId).toBe('skilled-dark')
     const noDark = PackSchema.parse({ ...pack, characters: pack.characters.filter((c) => c.kind !== 'dark') })
     expect(computeResult(noDark, 'quick', LEGEND, lean('brave', true)).characterId).toBe('legend-brave')
   })
