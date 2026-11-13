@@ -14,11 +14,13 @@ export interface CardData {
   lang: Lang
   rarity: Rarity
   tierLabel: string
-  traitLabel: string
+  /** Null when the character hides its trait badge (see `hideTraitAndMatch`). */
+  traitLabel: string | null
   monogram: string
   name: string
   youAre: string
-  match: string
+  /** Null when the character hides its match percentage. */
+  match: string | null
   badge: string | null
   strengthLabel: string
   strength: string
@@ -48,15 +50,16 @@ export function buildCardData({ pack, character, result, lang, playerName, fanBa
   const n = (v: number) => (lang === 'bn' ? toBnDigits(v) : String(v))
   const trait = pack.traits.find((t) => t.id === result.trait)
   const name = playerName.trim()
+  const hide = character.hideTraitAndMatch === true
   return {
     lang,
     rarity: result.rarity,
     tierLabel: pack.tiers.labels[result.rarity][lang],
-    traitLabel: trait ? trait.label[lang] : '',
+    traitLabel: hide ? null : trait ? trait.label[lang] : '',
     monogram: monogramOf(character),
     name: character.name[lang],
     youAre: name ? s('result.youAre', { name }) : s('result.youAreAnon'),
-    match: s('result.match', { n: n(result.matchPercent) }),
+    match: hide ? null : s('result.match', { n: n(result.matchPercent) }),
     badge: fanBadge ? fanBadge[lang] : null,
     strengthLabel: s('result.strength'),
     strength: character.strength[lang],

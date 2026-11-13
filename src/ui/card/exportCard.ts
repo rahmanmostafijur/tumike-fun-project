@@ -336,17 +336,20 @@ function layoutCard(ctx: Ctx, card: CardData, theme: FullTheme, draw: boolean, h
         ctx.fillText(text, PAD_X, y + 16)
       }
     }
-    const traitLatin = !hasBengali(card.traitLabel)
-    ctx.font = traitLatin ? `700 12px ${F.latin}` : `700 13px ${F.display}`
-    if (band) {
-      const traitW = traitLatin ? spacedWidth(ctx, card.traitLabel.toUpperCase(), 2.9) : ctx.measureText(card.traitLabel).width
-      labelPill(ctx, theme, CARD_W - PAD_X - traitW - 10, y, traitW + 20)
-    }
-    ctx.fillStyle = theme.muted
-    if (traitLatin) drawSpaced(ctx, card.traitLabel.toUpperCase(), CARD_W - PAD_X, y + 15.5, 2.9, 'right')
-    else {
-      ctx.textAlign = 'right'
-      ctx.fillText(card.traitLabel, CARD_W - PAD_X, y + 16)
+    const traitLabel = card.traitLabel
+    if (traitLabel !== null) {
+      const traitLatin = !hasBengali(traitLabel)
+      ctx.font = traitLatin ? `700 12px ${F.latin}` : `700 13px ${F.display}`
+      if (band) {
+        const traitW = traitLatin ? spacedWidth(ctx, traitLabel.toUpperCase(), 2.9) : ctx.measureText(traitLabel).width
+        labelPill(ctx, theme, CARD_W - PAD_X - traitW - 10, y, traitW + 20)
+      }
+      ctx.fillStyle = theme.muted
+      if (traitLatin) drawSpaced(ctx, traitLabel.toUpperCase(), CARD_W - PAD_X, y + 15.5, 2.9, 'right')
+      else {
+        ctx.textAlign = 'right'
+        ctx.fillText(traitLabel, CARD_W - PAD_X, y + 16)
+      }
     }
   }
   y += 22 + 20
@@ -382,13 +385,16 @@ function layoutCard(ctx: Ctx, card: CardData, theme: FullTheme, draw: boolean, h
   }
   y += lh * lines.length + 12
 
-  // Match pill and fan badge on one row when they fit.
+  // Match pill and fan badge on one row when they fit; no row when both are hidden.
+  const match = card.match
   ctx.font = `600 13px ${F.body}`
-  const matchW = ctx.measureText(card.match).width + 24
+  const matchW = match !== null ? ctx.measureText(match).width + 24 : 0
   ctx.font = `400 13px ${F.body}`
   const badgeW = card.badge ? ctx.measureText(card.badge).width + 24 + 19 : 0
-  const oneRow = !card.badge || matchW + 8 + badgeW <= INNER_W
+  const hasRow = match !== null || Boolean(card.badge)
+  const oneRow = match === null || !card.badge || matchW + 8 + badgeW <= INNER_W
   const drawMatch = (x: number, yy: number) => {
+    if (match === null) return
     ctx.strokeStyle = color
     ctx.lineWidth = 1
     pill(ctx, x + 0.5, yy + 0.5, matchW - 1, 25)
@@ -396,7 +402,7 @@ function layoutCard(ctx: Ctx, card: CardData, theme: FullTheme, draw: boolean, h
     ctx.fillStyle = color
     ctx.font = `600 13px ${F.body}`
     ctx.textAlign = 'center'
-    ctx.fillText(card.match, x + matchW / 2, yy + 17.5)
+    ctx.fillText(match, x + matchW / 2, yy + 17.5)
   }
   const drawBadge = (x: number, yy: number) => {
     if (!card.badge) return
@@ -411,18 +417,18 @@ function layoutCard(ctx: Ctx, card: CardData, theme: FullTheme, draw: boolean, h
     ctx.textAlign = 'left'
     ctx.fillText(card.badge, x + 31, yy + 17.5)
   }
-  if (draw) {
+  if (draw && hasRow) {
     if (oneRow) {
-      const total = matchW + (card.badge ? 8 + badgeW : 0)
-      const x0 = CARD_W / 2 - total / 2
+      const gap = match !== null && card.badge ? 8 : 0
+      const x0 = CARD_W / 2 - (matchW + gap + badgeW) / 2
       drawMatch(x0, y)
-      drawBadge(x0 + matchW + 8, y)
+      drawBadge(x0 + matchW + gap, y)
     } else {
       drawMatch(CARD_W / 2 - matchW / 2, y)
       drawBadge(CARD_W / 2 - badgeW / 2, y + 34)
     }
   }
-  y += oneRow ? 26 : 26 + 8 + 26
+  if (hasRow) y += oneRow ? 26 : 26 + 8 + 26
   y += 18
 
   // Divider with a diamond.

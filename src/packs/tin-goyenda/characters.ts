@@ -106,7 +106,7 @@ export const characters: C[] = [
 
   // Secret: 100% knowledge in the full journey
   {
-    id: 'tin-goyenda', kind: 'secret',
+    id: 'tin-goyenda', kind: 'secret', hideTraitAndMatch: true,
     name: L('তিন গোয়েন্দা', 'The Three Detectives'), monogram: '???',
     description: L(
       'তুমি একা একজন নও, তুমি পুরো দলটা: কিশোরের মাথা, মুসার সাহস আর রবিনের খাতা, সব একসাথে। যেকোনো রহস্য, যেকোনো সময়।',

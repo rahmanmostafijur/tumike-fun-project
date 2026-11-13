@@ -121,9 +121,11 @@ export function ResultCard({ card, className }: { card: CardData; className?: st
       <CardFrame rarity={card.rarity} />
       <div className="relative flex w-full items-center justify-between">
         <TierLabel card={card} />
-        <span className={cx('text-[13px] text-muted', hasBengali(card.traitLabel) ? 'font-display' : 'spaced font-latin text-[12px]', card.band && 'inline-flex h-[22px] items-center rounded-full bg-surface/85 px-2.5')}>
-          {card.traitLabel}
-        </span>
+        {card.traitLabel !== null && (
+          <span className={cx('text-[13px] text-muted', hasBengali(card.traitLabel) ? 'font-display' : 'spaced font-latin text-[12px]', card.band && 'inline-flex h-[22px] items-center rounded-full bg-surface/85 px-2.5')}>
+            {card.traitLabel}
+          </span>
+        )}
       </div>
 
       <div className="relative mt-5">
@@ -137,17 +139,21 @@ export function ResultCard({ card, className }: { card: CardData; className?: st
         {card.name}
       </h2>
 
-      <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
-        <span className="inline-flex h-[26px] items-center rounded-full border px-3 text-[13px] font-semibold" style={{ borderColor: frameColor(card.rarity), color: frameColor(card.rarity) }}>
-          <span className="pt-px">{card.match}</span>
-        </span>
-        {card.badge && (
-          <span className="inline-flex h-[26px] items-center gap-1.5 rounded-full border border-dashed border-line px-3 text-[13px] text-muted">
-            <Icon name="book" size={13} />
-            <span className="pt-px">{card.badge}</span>
-          </span>
-        )}
-      </div>
+      {(card.match !== null || card.badge) && (
+        <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+          {card.match !== null && (
+            <span className="inline-flex h-[26px] items-center rounded-full border px-3 text-[13px] font-semibold" style={{ borderColor: frameColor(card.rarity), color: frameColor(card.rarity) }}>
+              <span className="pt-px">{card.match}</span>
+            </span>
+          )}
+          {card.badge && (
+            <span className="inline-flex h-[26px] items-center gap-1.5 rounded-full border border-dashed border-line px-3 text-[13px] text-muted">
+              <Icon name="book" size={13} />
+              <span className="pt-px">{card.badge}</span>
+            </span>
+          )}
+        </div>
+      )}
 
       <div className="mt-[18px] flex w-full items-center gap-2 text-line" aria-hidden="true">
         <span className="h-px flex-1 bg-line" />

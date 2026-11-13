@@ -152,6 +152,11 @@ export const CharacterSchema = z.object({
   weakness: LocalizedSchema,
   /** A line that invites tagging friends. */
   squad: LocalizedSchema,
+  /**
+   * For a card that stands for every trait at once (e.g. a whole team): the
+   * result card shows no trait badge and no match percentage.
+   */
+  hideTraitAndMatch: z.boolean().optional(),
 })
 export type Character = z.infer<typeof CharacterSchema>
 
