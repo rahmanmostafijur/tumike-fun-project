@@ -49,7 +49,12 @@ export default definePack({
         { x: 79, y: 10, w: 30, h: 17, color: '#FFF1C2', strength: 0.35 },
         { x: 93, y: 45, w: 10, h: 6, color: '#FFC060', strength: 0.5, mode: 'flicker' },
       ],
-      particles: [{ kind: 'leaves', count: 6 }],
+      // Fireflies in the greenery and the lane (home), and down by the tea stall (early questions).
+      particles: [
+        { kind: 'leaves', count: 6 },
+        { kind: 'fireflies', count: 14, area: { x: 2, y: 24, w: 70, h: 38 } },
+        { kind: 'fireflies', count: 8, area: { x: 40, y: 62, w: 55, h: 22 } },
+      ],
     },
   },
   lifelines: {

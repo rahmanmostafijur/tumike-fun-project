@@ -253,6 +253,33 @@ button:disabled { cursor: default; }
   animation: amb-smoke ease-in-out infinite alternate;
 }
 @keyframes amb-smoke { from { transform: translate3d(0, 0, 0); opacity: .5; } to { transform: translate3d(var(--dx), -8px, 0); opacity: 1; } }
+/* Per-pack particle kinds (one system, see scenery/particles.ts). Transform and opacity only. */
+.amb-spark { border-radius: 50%; background: #FFD58A; box-shadow: 0 0 4px 1px rgba(255, 200, 110, .6); opacity: 0; animation: amb-spark ease-out infinite; }
+@keyframes amb-spark {
+  0% { opacity: 0; transform: translate3d(0, 0, 0); }
+  15% { opacity: .9; }
+  60% { opacity: .6; }
+  100% { opacity: 0; transform: translate3d(var(--sway), var(--rise), 0); }
+}
+.amb-note { width: 11px; height: 6px; border-radius: 1px; background: linear-gradient(90deg, #E9DFC6, #D3C59F); box-shadow: inset 0 0 0 1px rgba(110, 90, 50, .35); opacity: 0; animation: amb-note linear infinite; }
+@keyframes amb-note {
+  0% { opacity: 0; transform: translate3d(0, calc(var(--fall) * -0.04), 0) rotate(0deg) scaleY(1); }
+  8% { opacity: .6; }
+  50% { transform: translate3d(calc(var(--drift) * -0.5), calc(var(--fall) * .5), 0) rotate(calc(var(--spin) * .5)) scaleY(-.4); }
+  92% { opacity: .55; }
+  100% { opacity: 0; transform: translate3d(var(--drift), var(--fall), 0) rotate(var(--spin)) scaleY(1); }
+}
+.amb-haze { width: 55%; height: 9%; border-radius: 50%; background: radial-gradient(closest-side, rgba(170, 230, 110, .2), rgba(170, 230, 110, 0)); opacity: 0; transform: translate(-50%, -50%); animation: amb-haze ease-in-out infinite; }
+@keyframes amb-haze {
+  0% { opacity: 0; transform: translate3d(-50%, -50%, 0) scale(.8); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: translate3d(calc(-50% + var(--dx)), calc(-50% + var(--rise)), 0) scale(1.35); }
+}
+.amb-firefly { width: 3px; height: 3px; border-radius: 50%; background: #EEF59A; box-shadow: 0 0 6px 2px rgba(225, 240, 120, .55); opacity: 0; animation: amb-firefly-move ease-in-out infinite alternate, amb-firefly-glow ease-in-out infinite; }
+@keyframes amb-firefly-move { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(var(--dx), var(--dy), 0); } }
+@keyframes amb-firefly-glow { 0%, 100% { opacity: 0; } 50% { opacity: .9; } }
+.amb-glint { height: 1.5px; border-radius: 1px; background: linear-gradient(90deg, rgba(255, 200, 140, 0), rgba(255, 210, 160, .85), rgba(255, 200, 140, 0)); opacity: 0; animation: amb-glint ease-in-out infinite; }
+@keyframes amb-glint { 0%, 100% { opacity: 0; transform: translate3d(0, 0, 0) scaleX(.6); } 50% { opacity: .85; transform: translate3d(var(--dx), 0, 0) scaleX(1); } }
 .amb-star {
   transform: translate(-50%, -50%);
   border-radius: 50%;
@@ -286,7 +313,8 @@ button:disabled { cursor: default; }
 /* Hidden tab: pause everything. Reduced motion: fully static. */
 .anim-paused *, .anim-paused *::before, .anim-paused *::after { animation-play-state: paused !important; }
 .is-static .amb { animation: none !important; }
-.is-static .amb-steam-src, .is-static .amb-snow, .is-static .amb-leaf, .is-static .amb-smoke { display: none; }
+.is-static .amb-steam-src, .is-static .amb-snow, .is-static .amb-leaf, .is-static .amb-smoke,
+.is-static .amb-spark, .is-static .amb-note, .is-static .amb-haze, .is-static .amb-firefly, .is-static .amb-glint { display: none; }
 .is-static .scenery-box { transition: none; }
 
 /* ---------- Question feedback ---------- */

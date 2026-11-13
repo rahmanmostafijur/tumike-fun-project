@@ -50,7 +50,7 @@ export default definePack({
         { x: 81, y: 53, w: 18, h: 9, color: '#FF5A4A', strength: 0.4, mode: 'flicker' },
         { x: 83, y: 8, w: 12, h: 7, color: '#FFE0E0', strength: 0.18 },
       ],
-      particles: [{ kind: 'smoke', count: 3 }],
+      particles: [{ kind: 'smoke', count: 3 }, { kind: 'notes', count: 10 }],
     },
   },
   lifelines: {

@@ -68,7 +68,12 @@ export default definePack({
       glows: [
         { x: 80.2, y: 10.6, w: 30, h: 17, color: '#FFF1CF', strength: 0.35 },
         { x: 45, y: 22, w: 66, h: 14, color: '#FFC46B', strength: 0.26 },
-        { x: 55, y: 48, w: 50, h: 9, color: '#FFB85C', strength: 0.14 },
+        { x: 55, y: 48, w: 50, h: 9, color: '#FFB85C', strength: 0.14, mode: 'flicker' },
+      ],
+      // Golden sparks rising off the lit castle (home) and off the train by the lake (early questions).
+      particles: [
+        { kind: 'sparks', count: 16, area: { x: 16, y: 16, w: 66, h: 20 } },
+        { kind: 'sparks', count: 8, area: { x: 55, y: 62, w: 40, h: 8 } },
       ],
     },
     flyer: {

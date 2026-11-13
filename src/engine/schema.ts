@@ -56,6 +56,10 @@ export const StageSchema = z.object({
 export type Stage = z.infer<typeof StageSchema>
 
 const pct = z.number().min(0).max(100)
+
+/** Kinds of ambient particle a pack's painting can use (see BackgroundSchema.effects.particles). */
+export const PARTICLE_KINDS = ['snow', 'leaves', 'smoke', 'sparks', 'notes', 'haze', 'fireflies', 'glints'] as const
+export type ParticleKind = (typeof PARTICLE_KINDS)[number]
 /** A point on the background image, in percent of its width (x) and height (y). */
 export const PointSchema = z.object({ x: pct, y: pct })
 export type Point = z.infer<typeof PointSchema>
@@ -85,8 +89,24 @@ export const BackgroundSchema = z.object({
       glows: z
         .array(PointSchema.extend({ w: pct, h: pct, color: hex, strength: z.number().min(0).max(1), mode: z.enum(['pulse', 'flicker']).default('pulse') }))
         .default([]),
-      /** Scene-wide particles: falling snow, drifting leaves, thin smoke in the sky. */
-      particles: z.array(z.object({ kind: z.enum(['snow', 'leaves', 'smoke']), count: z.number().int().min(1).max(60) })).default([]),
+      /**
+       * Ambient particles, one shared system for every pack: falling snow,
+       * drifting leaves, thin smoke, rising sparks, falling banknotes, rising
+       * haze, fireflies, glints on water. `area` keeps them to part of the
+       * painting (percent of the image); without it they use the whole scene.
+       */
+      particles: z
+        .array(
+          z.object({
+            kind: z.enum(PARTICLE_KINDS),
+            count: z.number().int().min(1).max(60),
+            area: z
+              .object({ x: pct, y: pct, w: pct, h: pct })
+              .refine((a) => a.x + a.w <= 100 && a.y + a.h <= 100, 'area must stay inside the image')
+              .optional(),
+          }),
+        )
+        .default([]),
     })
     .default({ stars: [], steam: [], glows: [], particles: [] }),
   /** Optional sprite that crosses the sky now and then, and delivers the result. */

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProp
 import type { AnyPack, Background, Point } from '../../engine/schema'
 import { cx } from '../util'
 import { placeBox, pointAlong, type Box, type Size } from './geometry'
+import { particleSpecs } from './particles'
 import type { SceneryKind, SceneryView } from './view'
 
 /** Where the focal point should sit on screen, per view (fractions of the frame). */
@@ -55,46 +56,13 @@ function usePauseWhenHidden(): void {
   }, [])
 }
 
-/** Stable pseudo-random number in [0, 1) so particles keep their places between renders. */
-function rand(i: number, salt: number): number {
-  const x = Math.sin(i * 12.9898 + salt * 78.233) * 43758.5453
-  return x - Math.floor(x)
-}
-
+/** Every pack's ambient particles, from the shared per-kind specs (see particles.ts). */
 function Particles({ particles, box }: { particles: Background['effects']['particles']; box: Size }) {
   return (
     <>
-      {particles.flatMap((p, k) =>
-        Array.from({ length: p.count }, (_, i) => {
-          const r1 = rand(i, k + 1)
-          const r2 = rand(i, k + 7)
-          const r3 = rand(i, k + 13)
-          const key = `${p.kind}-${k}-${i}`
-          if (p.kind === 'snow') {
-            const size = 1.5 + r2 * 2.5
-            const style = {
-              left: `${r1 * 100}%`, top: 0, width: size, height: size,
-              '--fall': `${box.h * 1.06}px`, '--drift': `${(r3 - 0.5) * 60}px`,
-              animationDuration: `${11 + r2 * 9}s`, animationDelay: `-${r3 * 20}s`,
-            } as CSSProperties
-            return <span key={key} className="amb amb-snow" style={style} />
-          }
-          if (p.kind === 'leaves') {
-            const style = {
-              left: `${r1 * 45}%`, top: `${r2 * 25}%`,
-              '--dx': `${box.w * (0.25 + r3 * 0.35)}px`, '--dy': `${box.h * (0.3 + r1 * 0.25)}px`,
-              animationDuration: `${15 + r3 * 8}s`, animationDelay: `-${r2 * 22}s`,
-            } as CSSProperties
-            return <span key={key} className="amb amb-leaf" style={style} />
-          }
-          const style = {
-            left: `${-15 + r1 * 35}%`, top: `${5 + i * 7 + r2 * 4}%`,
-            '--dx': `${box.w * 0.28}px`,
-            animationDuration: `${34 + r3 * 14}s`, animationDelay: `-${r2 * 30}s`,
-          } as CSSProperties
-          return <span key={key} className="amb amb-smoke" style={style} />
-        }),
-      )}
+      {particleSpecs(particles, box).map((p) => (
+        <span key={p.key} className={p.className} style={p.style} />
+      ))}
     </>
   )
 }

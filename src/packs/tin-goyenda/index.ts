@@ -48,6 +48,13 @@ export default definePack({
         { x: 30, y: 80, w: 9, h: 5, color: '#FFE7A8', strength: 0.45 },
         { x: 82, y: 8, w: 12, h: 7, color: '#FFF1CF', strength: 0.2 },
       ],
+      // Sunset glints on the sea, mist at the cliff foot (home) and night mist over the yard (early questions).
+      particles: [
+        { kind: 'glints', count: 10, area: { x: 52, y: 34, w: 46, h: 6 } },
+        { kind: 'glints', count: 8, area: { x: 5, y: 40, w: 90, h: 16 } },
+        { kind: 'smoke', count: 3, area: { x: 0, y: 30, w: 70, h: 10 } },
+        { kind: 'smoke', count: 3, area: { x: 0, y: 62, w: 100, h: 20 } },
+      ],
     },
   },
   lifelines: {

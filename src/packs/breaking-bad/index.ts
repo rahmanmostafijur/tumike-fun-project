@@ -44,10 +44,17 @@ export default definePack({
       { x: 66, y: 56 },
     ],
     effects: {
+      // Vapour off the glowing flask on the lab table.
+      steam: [{ x: 13.5, y: 72 }],
       glows: [
         { x: 13, y: 78, w: 12, h: 7, color: '#5FE0F0', strength: 0.45 },
         { x: 82, y: 62, w: 16, h: 6, color: '#FFC46B', strength: 0.4, mode: 'flicker' },
         { x: 83, y: 13, w: 22, h: 12, color: '#F4F2C8', strength: 0.22 },
+      ],
+      // Green haze rising over the mesas (seen on home) and off the desert floor (seen as the journey pans down).
+      particles: [
+        { kind: 'haze', count: 5, area: { x: 0, y: 26, w: 100, h: 22 } },
+        { kind: 'haze', count: 4, area: { x: 0, y: 58, w: 100, h: 24 } },
       ],
     },
   },
