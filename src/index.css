@@ -92,12 +92,18 @@ button:disabled { cursor: default; }
 .spaced { letter-spacing: 0.24em; text-transform: uppercase; }
 .font-latin { font-variant-numeric: lining-nums; }
 /* Question screen: keep the top of the painting clear; the question starts on the dark fade. */
-.q-window { height: calc(36dvh - 82px); flex-shrink: 0; }
+/*
+ * The question screen is exactly one viewport tall. When a long opening line
+ * and question would push the options or lifelines below the fold, the
+ * painted window gives up to 48px; anything beyond that scrolls as before.
+ */
+.q-screen { height: 100dvh; }
+.q-window { height: calc(36dvh - 82px); min-height: calc(36dvh - 130px); flex-shrink: 1; }
 
 /* Compact rhythm for very short phones. */
 @media (max-height: 700px) {
   .screen { padding-top: 12px; }
-  .q-window { height: calc(35dvh - 74px); }
+  .q-window { height: calc(35dvh - 74px); min-height: calc(35dvh - 122px); }
   .q-body { padding-block: 6px; }
   .q-options { gap: 8px; }
   .q-options > button { min-height: 52px; }
@@ -157,7 +163,8 @@ button:disabled { cursor: default; }
 @keyframes rise-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 .screen-enter { animation: rise-in 420ms cubic-bezier(.2, .7, .2, 1) both; }
-.stagger > * { animation: rise-in 460ms cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(var(--i, 0) * 50ms); }
+/* `backwards`, not `both`: once risen, items must take their own opacity again (50/50 and answer dimming). */
+.stagger > * { animation: rise-in 460ms cubic-bezier(.2, .7, .2, 1) backwards; animation-delay: calc(var(--i, 0) * 50ms); }
 .fade-in { animation: fade-in 300ms ease both; }
 
 /* ---------- Painted background (shared scenery layer) ---------- */

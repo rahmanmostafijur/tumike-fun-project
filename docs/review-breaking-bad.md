@@ -39,7 +39,7 @@ To fix a question, edit `src/packs/breaking-bad/knowledge.ts`. The correct optio
 ### 3. Where does Walt work a second job at the start of the story?
 
 - **Question (bn):** গল্পের শুরুতে Walt কোথায় দ্বিতীয় চাকরি করেন?
-- **Opening line:** Remember how a teacher's pay never stretched far enough, so after the last bell Walt hurried off to a second job?
+- **Opening line:** A teacher's pay was never enough, so after school Walt went off to work again…
 - **Opening line (bn):** শিক্ষকের বেতনে সংসার চলে না, তাই শেষ ঘণ্টা বাজলেই Walt ছুটত আরেকটা কাজে, মনে আছে?
 - **Options:**
   - A. At a car wash / একটা কার ওয়াশে **(correct)**
@@ -282,7 +282,7 @@ To fix a question, edit `src/packs/breaking-bad/knowledge.ts`. The correct optio
 ### 22. What story do they tell the family to explain the money?
 
 - **Question (bn):** টাকার উৎস হিসেবে পরিবারকে কী গল্প বলা হয়?
-- **Opening line:** To convince the family, Skyler wrote a careful cover story and even made Walt rehearse it…
+- **Opening line:** To convince the family, Skyler wrote a cover story and made Walt rehearse it…
 - **Opening line (bn):** পরিবারকে বিশ্বাস করাতে Skyler নিজে বসে একটা নিখুঁত গল্প সাজাল, এমনকি রিহার্সালও করাল…
 - **Options:**
   - A. He won it counting cards at blackjack / জুয়ায় তাস গুনে জেতা **(correct)**

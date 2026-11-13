@@ -153,7 +153,7 @@ export function QuestionScreen({ pack, mode, seed, onFinish, onQuit }: QuestionP
   }
 
   return (
-    <main className="screen">
+    <main className="screen q-screen">
       <header className="relative grid grid-cols-[64px_1fr_64px] items-center">
         <IconButton icon="close" label={t('q.close')} onClick={() => setConfirmQuit(true)} />
         <div className="flex items-center justify-center gap-2">
