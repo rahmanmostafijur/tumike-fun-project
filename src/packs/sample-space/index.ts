@@ -19,6 +19,7 @@ const c = (id: string, kind: 'regular' | 'dark' | 'secret', tier: 'beginner' | '
 export default definePack({
   id: 'sample-space',
   title: L('নমুনা: মহাকাশ', 'Sample: Space'),
+  headline: { bn: 'মহাকাশের দুনিয়ায় তুমি কে?', en: 'Who are you in the world of Space?' },
   listed: false,
   primaryLang: 'bn',
   icon: { viewBox: '0 0 32 32', markup: '<circle cx="16" cy="16" r="7"/><ellipse cx="16" cy="16" rx="14" ry="4.5" transform="rotate(-20 16 16)"/>' },

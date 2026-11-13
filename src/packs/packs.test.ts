@@ -2,7 +2,8 @@ import { describe, expect, test } from 'vitest'
 import { allPacks, getAnyPack, getPack, listedPacks, packErrors, packs } from './index'
 import { buildQuiz, modeLength } from '../engine/selection'
 import { computeResult, knowledgePercent, resolveCharacter, tierFor } from '../engine/scoring'
-import { TIERS, type Pack, type Tier } from '../engine/schema'
+import { PackSchema, TIERS, type Pack, type Tier } from '../engine/schema'
+import { packHeadline } from '../ui/util'
 import { createRng } from '../engine/rng'
 
 describe('pack registry', () => {
@@ -65,6 +66,38 @@ describe('every pack always produces a real result', () => {
       }
     })
   }
+})
+
+describe('landing heading names the active world', () => {
+  for (const pack of allPacks) {
+    test(`${pack.id}: has the heading in both languages`, () => {
+      expect(pack.headline.en).toBe(`Who are you in the world of ${pack.id === 'sample-space' ? 'Space' : pack.title.en}?`)
+      // Bangla is written out per pack (possessive suffix included), always in Bangla script.
+      expect(pack.headline.bn).toMatch(/^[ঀ-৿][ঀ-৿ ]*দুনিয়ায় তুমি কে\?$/)
+    })
+  }
+
+  test('the Bangla headings carry the right possessive for each world', () => {
+    const bn = Object.fromEntries(allPacks.map((p) => [p.id, p.headline.bn]))
+    expect(bn).toMatchObject({
+      'harry-potter': 'হ্যারি পটারের দুনিয়ায় তুমি কে?',
+      'money-heist': 'মানি হাইস্টের দুনিয়ায় তুমি কে?',
+      'tin-goyenda': 'তিন গোয়েন্দার দুনিয়ায় তুমি কে?',
+      'himu-misir-ali': 'হিমু ও মিসির আলির দুনিয়ায় তুমি কে?',
+    })
+  })
+
+  test('a pack without a heading does not validate', () => {
+    const hp = getPack('harry-potter')!
+    const { headline: _omit, ...rest } = hp
+    expect(PackSchema.safeParse(rest).success).toBe(false)
+  })
+
+  test('with no active pack the generic heading is the fallback', () => {
+    expect(packHeadline(undefined, 'en', 'Who are you, and in which world?')).toBe('Who are you, and in which world?')
+    expect(packHeadline(null, 'bn', 'কোন দুনিয়ায় তুমি কে?')).toBe('কোন দুনিয়ায় তুমি কে?')
+    expect(packHeadline(getPack('harry-potter'), 'bn', 'x')).toBe('হ্যারি পটারের দুনিয়ায় তুমি কে?')
+  })
 })
 
 describe('a fallback never promotes a player above the tier they earned', () => {

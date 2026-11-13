@@ -9,6 +9,7 @@ export default definePack({
   order: 2,
   primaryLang: 'bn',
   title: { bn: 'হিমু ও মিসির আলি', en: 'Himu & Misir Ali' },
+  headline: { bn: 'হিমু ও মিসির আলির দুনিয়ায় তুমি কে?', en: 'Who are you in the world of Himu & Misir Ali?' },
   tagline: { bn: 'হলুদ পাঞ্জাবি নাকি যুক্তির খাতা, তুমি কোন দিকে?', en: 'The yellow panjabi or the logician’s notebook?' },
   /** Carousel icon: the crescent moon. */
   icon: { viewBox: '0 0 32 32', markup: '<path d="M21 6 a10 10 0 1 0 5 14 a8 8 0 1 1 -5 -14z"/>' },

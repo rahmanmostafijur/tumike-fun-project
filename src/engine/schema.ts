@@ -251,6 +251,11 @@ export const PackSchema = z
     status: z.literal('playable').default('playable'),
     id: slug,
     title: LocalizedSchema,
+    /**
+     * The landing heading while this pack is shown, written out in full per
+     * language so Bangla gets the right possessive ("হ্যারি পটারের দুনিয়ায় তুমি কে?").
+     */
+    headline: LocalizedSchema,
     /** One line shown on the landing carousel card. */
     tagline: LocalizedSchema.optional(),
     /** Position on the landing carousel (lower comes first). */
@@ -394,6 +399,8 @@ export const TeaserPackSchema = z.object({
   status: z.literal('coming-soon'),
   id: slug,
   title: LocalizedSchema,
+  /** The landing heading while this pack is shown (see PackSchema.headline). */
+  headline: LocalizedSchema,
   tagline: LocalizedSchema,
   order: z.number().int().default(100),
   listed: z.boolean().default(true),

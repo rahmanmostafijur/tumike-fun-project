@@ -1,4 +1,9 @@
-import type { Character, Theme } from '../engine/schema'
+import type { Character, Localized, Theme } from '../engine/schema'
+
+/** The landing heading for the active pack, or the generic one when no pack is active yet. */
+export function packHeadline(pack: { headline: Localized } | null | undefined, lang: keyof Localized, generic: string): string {
+  return pack ? pack.headline[lang] : generic
+}
 
 const THEME_DEFAULTS = { success: '#7CC49A', danger: '#E58A80', dark: '#C9707A' }
 

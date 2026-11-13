@@ -50,6 +50,7 @@ export function makeFixturePack(stages = 4): Pack {
   const input: PackInput = {
     id: 'fixture',
     title: L('Fixture'),
+    headline: L('Who are you in the fixture?'),
     primaryLang: 'en',
     icon: art,
     theme: { bg: hex, surface: hex, line: hex, accent: hex, text: hex, muted: hex, disabled: hex, onAccent: hex, success: hex, danger: hex, dark: hex },

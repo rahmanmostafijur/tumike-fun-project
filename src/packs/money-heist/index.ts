@@ -9,6 +9,7 @@ export default definePack({
   order: 4,
   primaryLang: 'en',
   title: { bn: 'Money Heist', en: 'Money Heist' },
+  headline: { bn: 'মানি হাইস্টের দুনিয়ায় তুমি কে?', en: 'Who are you in the world of Money Heist?' },
   tagline: { bn: 'লাল জাম্পস্যুট পরলে তোমার শহরের নাম কী হতো?', en: 'Put on the red jumpsuit. What is your city name?' },
   /** Carousel icon: the mask. */
   icon: { viewBox: '0 0 32 32', markup: '<path d="M6 10 Q16 6 26 10 Q27 20 16 27 Q5 20 6 10Z"/><path d="M11 15 Q13 13 15 15 M17 15 Q19 13 21 15 M12 20 Q16 23 20 20"/>' },

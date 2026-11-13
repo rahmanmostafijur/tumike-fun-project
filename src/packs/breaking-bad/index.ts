@@ -9,6 +9,7 @@ export default definePack({
   order: 3,
   primaryLang: 'en',
   title: { bn: 'Breaking Bad', en: 'Breaking Bad' },
+  headline: { bn: 'ব্রেকিং ব্যাডের দুনিয়ায় তুমি কে?', en: 'Who are you in the world of Breaking Bad?' },
   tagline: { bn: 'মরুভূমির ল্যাবে তুমি কে হতে?', en: 'Who would you be in the desert lab?' },
   /** Carousel icon: the flask. */
   icon: { viewBox: '0 0 32 32', markup: '<path d="M12 5 H20 M13 5 V13 L7 24 Q6 27 9 27 H23 Q26 27 25 24 L19 13 V5"/><path d="M10 20 H22"/>' },

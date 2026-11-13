@@ -8,6 +8,7 @@ import owl from './owl.webp'
 export default definePack({
   id: 'harry-potter',
   title: { bn: 'Harry Potter', en: 'Harry Potter' },
+  headline: { bn: 'হ্যারি পটারের দুনিয়ায় তুমি কে?', en: 'Who are you in the world of Harry Potter?' },
   tagline: { bn: 'Hogwarts-এ তুমি আসলে কে?', en: 'Who are you, really, at Hogwarts?' },
   order: 0,
   primaryLang: 'en',

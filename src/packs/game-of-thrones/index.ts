@@ -9,6 +9,7 @@ export default definePack({
   order: 5,
   primaryLang: 'en',
   title: { bn: 'Game of Thrones', en: 'Game of Thrones' },
+  headline: { bn: 'গেম অব থ্রোনসের দুনিয়ায় তুমি কে?', en: 'Who are you in the world of Game of Thrones?' },
   tagline: { bn: 'দেয়ালের এপারে না ওপারে, তুমি কোন ঘরের?', en: 'North of the Wall or south: which house are you?' },
   /** Carousel icon: a castle keep. */
   icon: { viewBox: '0 0 32 32', markup: '<path d="M7 27 V12 H11 V8 H15 V12 H17 V8 H21 V12 H25 V27Z"/><path d="M14 27 V21 Q16 18 18 21 V27"/>' },

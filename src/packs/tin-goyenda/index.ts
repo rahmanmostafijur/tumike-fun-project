@@ -9,6 +9,7 @@ export default definePack({
   order: 1,
   primaryLang: 'bn',
   title: { bn: 'তিন গোয়েন্দা', en: 'Tin Goyenda' },
+  headline: { bn: 'তিন গোয়েন্দার দুনিয়ায় তুমি কে?', en: 'Who are you in the world of Tin Goyenda?' },
   tagline: { bn: 'তিন কিশোর গোয়েন্দার দলে তুমি কোন জন?', en: 'Which of the three young detectives are you?' },
   icon: { viewBox: '0 0 32 32', markup: '<circle cx="13" cy="13" r="7"/><path d="M18.5 18.5 L26 26"/>' },
   theme: {

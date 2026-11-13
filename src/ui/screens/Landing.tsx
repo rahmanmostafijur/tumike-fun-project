@@ -8,7 +8,7 @@ import { Carousel } from '../components/Carousel'
 import { Icon } from '../components/Icon'
 import { LangToggle } from '../components/LangToggle'
 import { useSceneryView } from '../scenery/view'
-import { cx } from '../util'
+import { cx, packHeadline } from '../util'
 
 interface LandingProps {
   packs: readonly AnyPack[]
@@ -26,12 +26,15 @@ const NAME_MAX = 24
 const FULL_FALLBACK = 21
 
 export function Landing({ packs, selected, onSelect, name, onNameChange, onStart, onCollection }: LandingProps) {
-  const { t, num } = useI18n()
+  const { t, num, lang } = useI18n()
   const nameId = useId()
   useSceneryView('landing')
   const playable = isPlayable(selected)
   const fullCount = playable ? modeLength(selected, 'full') : FULL_FALLBACK
   const quickCount = playable ? modeLength(selected, 'quick') : DEFAULT_QUICK.knowledge + DEFAULT_QUICK.scenario
+  const headline = packHeadline(selected, lang, t('landing.headline'))
+  // One entry per distinct heading: every listed pack's plus the generic fallback.
+  const headlines = [...new Set([t('landing.headline'), ...packs.map((p) => p.headline[lang]), headline])].map((text) => ({ key: text, text }))
   // With a painting, the headline starts below the skyline at the top.
   const headlineTop = selected.background ? 'mt-[clamp(96px,calc(27vh-50px),196px)]' : 'mt-[clamp(20px,6vh,72px)]'
 
@@ -46,8 +49,25 @@ export function Landing({ packs, selected, onSelect, name, onNameChange, onStart
       </header>
 
       <section className={cx('stagger relative', headlineTop)}>
-        <h1 className="font-display text-[clamp(28px,8.4vw,34px)] leading-[1.18] text-ink" style={{ '--i': 0 } as CSSProperties}>
-          {t('landing.headline')}
+        {/*
+          Every pack's heading sits in the same grid cell, so the cell is as tall
+          as the longest one and nothing below moves when the pack changes. Only
+          the active heading is visible and read out; it fades in.
+        */}
+        <h1 className="grid font-display text-[clamp(28px,8.4vw,34px)] leading-[1.18] text-ink" style={{ '--i': 0 } as CSSProperties}>
+          {headlines.map(({ key, text }) => (
+            <span
+              key={key}
+              aria-hidden={text !== headline || undefined}
+              className={cx(
+                // Bottom-aligned: a shorter heading leaves its spare line above, over the painting, not before the subtitle.
+                'col-start-1 row-start-1 self-end text-balance transition-opacity duration-300 ease-out motion-reduce:transition-none',
+                text === headline ? 'opacity-100' : 'pointer-events-none opacity-0 select-none',
+              )}
+            >
+              {text}
+            </span>
+          ))}
         </h1>
         <p className="mt-2 text-[15.5px] leading-[1.5] text-muted" style={{ '--i': 1 } as CSSProperties}>
           {t('landing.subtitle', { q: quickCount, s: QUICK_SECONDS })}
